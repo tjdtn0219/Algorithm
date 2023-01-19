@@ -20,7 +20,10 @@ public class Main{
             pList.add(point);
         }
 
-        Collections.sort(pList, new PointComparator());
+        Collections.sort(pList, (final Point p1, final Point p2)->{
+            if(p1.x == p2.x) return p1.y - p2.y;
+            return p1.x - p2.x;
+        });
 
         for(Point p : pList){
             System.out.println(p.x + " " + p.y);
