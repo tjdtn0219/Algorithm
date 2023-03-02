@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,8 +32,8 @@ public class Main{
             while(!stack.empty()) {
                 if(cnt_arr[stack.peek()] < cnt_arr[i]) {
                     int pop = stack.pop();
-                    cnt_arr[pop] = cnt_arr[i];
-                    num_arr[pop] = num_arr[i];
+                    cnt_arr[pop] = num_arr[i];
+//                    num_arr[pop] = num_arr[i];
                 } else {
                     stack.push(i);
                     break;
@@ -45,10 +46,10 @@ public class Main{
         while(!stack.empty()) {
             int pop = stack.pop();
             cnt_arr[pop] = -1;
-            num_arr[pop] = -1;
+//            num_arr[pop] = -1;
         }
 
-        for(int n : num_arr) {
+        for(int n : cnt_arr) {
             sb.append(n).append(" ");
         }
 
