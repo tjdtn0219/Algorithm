@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
+import java.io.*;
 
 public class Main{
 
@@ -57,6 +55,14 @@ public class Main{
             int y = popped.getY();
             int vk = popped.getVK();
 
+            for(int dir=0; dir<4; dir++) {
+                int nx = x + dx[dir];
+                int ny = y + dy[dir];
+                if(nx<0 || ny<0 || nx>=n || ny>=m) continue;
+                if(board[nx][ny]==1 || dist[nx][ny][vk]>0) continue;
+                q.add(new Pair(nx,ny,vk));
+                dist[nx][ny][vk] = dist[x][y][vk] + 1;
+            }
             if(vk < k) {
                 for(int dir=0; dir<8; dir++) {
                     int nx = x + kdx[dir];
@@ -67,14 +73,6 @@ public class Main{
                     q.add(new Pair(nx,ny,vk+1));
                     dist[nx][ny][vk+1] = dist[x][y][vk] + 1;
                 }
-            }
-            for(int dir=0; dir<4; dir++) {
-                int nx = x + dx[dir];
-                int ny = y + dy[dir];
-                if(nx<0 || ny<0 || nx>=n || ny>=m) continue;
-                if(board[nx][ny]==1 || dist[nx][ny][vk]>0) continue;
-                q.add(new Pair(nx,ny,vk));
-                dist[nx][ny][vk] = dist[x][y][vk] + 1;
             }
         }
     }
