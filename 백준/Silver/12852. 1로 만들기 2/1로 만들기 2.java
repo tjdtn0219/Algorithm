@@ -11,27 +11,28 @@ public class Main {
 
         int n = Integer.parseInt(bf.readLine());
 
-        int[][] d = new int[n+1][2];
+        int[] d = new int[n+1];
+        int[] prev = new int[n+1];
 
-        d[1][0] = 0;
+        d[1] = 0;
 
         for(int i=2; i<=n; i++) {
-            d[i][0] = d[i-1][0] + 1;
-            d[i][1] = i-1;
-            if(i%2==0 && d[i][0] > d[i/2][0] + 1) {
-                d[i][0] = d[i/2][0] + 1;
-                d[i][1] = i/2;
+            d[i] = d[i-1] + 1;
+            prev[i] = i-1;
+            if(i%2==0 && d[i] > d[i/2] + 1) {
+                d[i] = d[i/2] + 1;
+                prev[i] = i/2;
             }
-            if(i%3==0 && d[i][0] > d[i/3][0] + 1) {
-                d[i][0] = d[i/3][0] + 1;
-                d[i][1] = i/3;
+            if(i%3==0 && d[i] > d[i/3] + 1) {
+                d[i] = d[i/3] + 1;
+                prev[i] = i/3;
             }
         }
 
-        System.out.println(d[n][0]);
-        while(d[n][1] > 0) {
+        System.out.println(d[n]);
+        while(prev[n] > 0) {
             System.out.print(n + " ");
-            n = d[n][1];
+            n = prev[n];
         }
         System.out.print(1);
 
