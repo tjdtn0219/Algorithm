@@ -1,127 +1,136 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.io.*;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Main {
 
-    public static int n,m;
-    public static int[][] map;
     public static int[] dx = {1,0,-1,0};
-    public static int[] dy = {0,1,0,-1};
+    public static int[] dy = {0,-1,0,1};
+    public static int[][] map;
+    public static int n, m;
+    public static int year = 0;
 
     public static void main(String[] args) throws IOException {
 
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        String[] strings = bf.readLine().split(" ");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        String[] strings = br.readLine().split(" ");
+
         n = Integer.parseInt(strings[0]);
         m = Integer.parseInt(strings[1]);
+
         map = new int[n][m];
 
         for(int i=0; i<n; i++) {
-            strings = bf.readLine().split(" ");
+            strings = br.readLine().split(" ");
             for(int j=0; j<m; j++) {
                 map[i][j] = Integer.parseInt(strings[j]);
             }
         }
 
-        int year = 0;
+        int ans = 0;
         while(true) {
-            year++;
-            melt();
-//            System.out.println("TAG1");
-//            for(int i=0; i<n; i++) {
-//                for(int j=0; j<m; j++) {
-//                    System.out.print(map[i][j] + " ");
-//                }
-//                System.out.println("");
-//            }
-            int res = check_part();
-            if(res==0) {
-                year = 0;
-                break;
-            } else if(res==2) {
+            melting();
+            int partCnt = getPartCnt();
+            if(partCnt==0) break;
+            if(partCnt>1) {
+                ans = year;
                 break;
             }
+
         }
-        System.out.println(year);
+
+        System.out.println(ans);
     }
 
-    public static void melt() {
-        int[][] zeros = new int[n][m];
-        for(int i=1; i<n-1; i++) {
-            for(int j=1; j<m-1; j++) {
+    public static void melting() {
+        int[][] meltingCnt = new int[n][m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (map[i][j] == 0) continue;
                 int cnt = 0;
-                for(int dir=0; dir<4; dir++) {
-                    int nx = i + dx[dir];
-                    int ny = j + dy[dir];
-                    if(map[nx][ny] == 0) cnt++;
+                for (int dir = 0; dir < 4; dir++) {
+                    int ni = i + dx[dir];
+                    int nj = j + dy[dir];
+                    if (ni < 0 || nj < 0 || ni >= n || nj >= m) continue;
+                    if (map[ni][nj] == 0) cnt++;
                 }
-                zeros[i][j] = cnt;
+                meltingCnt[i][j] = cnt;
             }
         }
-        for(int i=1; i<n-1; i++) {
-            for(int j=1; j<m-1; j++) {
-                map[i][j] -= zeros[i][j];
-                if(map[i][j]<0) map[i][j]=0;
+
+//        System.out.println("======");
+//        printArr(meltingCnt);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if(map[i][j]==0) continue;
+                map[i][j] = Math.max(0, map[i][j] - meltingCnt[i][j]);
             }
         }
+        year++;
     }
 
-    public static int check_part() {
+    public static int getPartCnt() {
+
         boolean[][] vis = new boolean[n][m];
-        int cnt = 0;
-        boolean flag = false;
+
+        int partCnt = 0;
         for(int i=0; i<n; i++) {
             for(int j=0; j<m; j++) {
-                if(!vis[i][j] && map[i][j]>0) {
-                    flag = true;
-                    dfs(vis, i, j);
-                    cnt++;
-                    if(cnt>1) return 2;
+                if(map[i][j]>0 && !vis[i][j]) {
+                    bfs(new Pair(i,j), vis);
+                    partCnt++;
                 }
             }
         }
-        if(flag) return 1;
-        else return 0;
+        return partCnt;
     }
 
-    public static void dfs(boolean[][] vis, int i, int j) {
-        Queue<Pair> queue = new LinkedList<>();
-        queue.add(new Pair(i,j));
-        vis[i][j] = true;
+    public static void bfs(Pair pair, boolean[][] vis) {
+        Queue<Pair> q = new LinkedList<>();
+        q.add(pair);
+        vis[pair.x][pair.y] = true;
 
-        while(!queue.isEmpty()) {
-            Pair popped = queue.poll();
-            int x = popped.getX();
-            int y = popped.getY();
+        while(!q.isEmpty()) {
+            Pair polled = q.poll();
+            int x = polled.x;
+            int y = polled.y;
             for(int dir=0; dir<4; dir++) {
                 int nx = x + dx[dir];
                 int ny = y + dy[dir];
-                if(nx<0 || ny<0 || nx>=n || ny>=m) continue;
+                if (nx<0 || ny<0 || nx>=n || ny>=m) continue;
                 if(map[nx][ny]==0 || vis[nx][ny]) continue;
+                q.add(new Pair(nx, ny));
                 vis[nx][ny] = true;
-                queue.add(new Pair(nx, ny));
             }
         }
-
     }
 
+    public static void printMap() {
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                System.out.print(map[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+    public static void printArr(int[][] arr) {
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                System.out.print(arr[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
 }
 
-class Pair{
-    public int x;
-    public int y;
+class Pair {
+    int x;
+    int y;
 
     public Pair(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-    public int getY() {
-        return y;
     }
 }
