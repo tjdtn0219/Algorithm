@@ -1,35 +1,56 @@
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.*;
 
-public class Main{
-    public static void main(String[] args) throws IOException {
+public class Main {
 
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+    public static int n;
 
-        int N = Integer.parseInt(bf.readLine());
-        int[] arr = new int[N];
+    public static void main(String[] args) throws Exception {
 
-        for(int i=0; i<N; i++){
-            arr[i] = Integer.parseInt(bf.readLine());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        n = Integer.parseInt(br.readLine());
+
+        int[] arr = new int[n];
+
+        for(int i=0; i<n; i++) {
+            arr[i] = Integer.parseInt(br.readLine());
         }
 
-        bubble_sort(arr);
+        sort(arr);
 
-        for(int i=0; i<N; i++){
-            System.out.println(arr[i]);
-        }
+        for(int i=0; i<n; i++) System.out.println(arr[i]);
+        System.out.println();
+
     }
 
-    public static void bubble_sort(int[] arr){
-        for(int i=0; i<arr.length-1; i++){
-            for(int j=0; j<arr.length-1-i; j++){
-                if(arr[j] > arr[j+1]){
-                    int temp = arr[j+1];
-                    arr[j+1] = arr[j];
-                    arr[j] = temp;
-                }
+    public static void sort(int[] arr) {
+        quickSort(arr, 0, n-1);
+    }
+
+    public static void quickSort(int[] arr, int low, int high) {
+        if(low>=high) return ;
+
+        int pivot = (low + high) / 2;
+        int pivotValue = arr[pivot];
+
+        int left = low;
+        int right = high;
+        while(left<=right) {
+            while(arr[left] < pivotValue) left++;
+            while(arr[right] > pivotValue) right--;
+            if(left <= right) {
+                int tmp = arr[right];
+                arr[right] = arr[left];
+                arr[left] = tmp;
+                left++;
+                right--;
             }
         }
+
+        quickSort(arr, low, right);
+        quickSort(arr, left, high);
     }
 }
