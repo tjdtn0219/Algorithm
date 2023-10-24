@@ -26,26 +26,15 @@ public class Main {
         long ans = 0;
         long cur = -1000000002;
         for(long[] line : arr) {
-//            System.out.print(line[0] + " , " + line[1]);
-//            if(cur >= line[1]) {
-//                //nothing
-//            } else if(cur < line[y] && cur > line[0]) {
-//                ans += line[1] - cur;
-//            } else {
-//                ans += line[1] - line[0];
-//            }
-            
             if (cur < line[0]) {
                 ans += line[1] - line[0];
                 cur = line[1];
-            } else if (cur >= line[1]) {
+            } else if (cur > line[1]) {
                 //nothing
             } else {
                 ans += line[1]-cur;
                 cur = line[1];
             }
-            
-//            System.out.println(" cur : " + cur + ", ans : " + ans);
         }
         System.out.println(ans);
 
