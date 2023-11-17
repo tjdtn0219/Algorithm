@@ -3,39 +3,40 @@ import java.io.*;
 
 class Solution {
     public int solution(int[] order) {
-        int answer = 0;
-        Queue<Integer> queue = new LinkedList<>();
-        Stack<Integer> stack = new Stack<>();
         
-        int max = 0;
-        for(int i=0; i<order.length; i++) {
-            if(max < order[i]) max = order[i];
+        int n = order.length+1;
+        
+        Stack<Integer> stk = new Stack<>();
+        Queue<Integer> q = new LinkedList<>();
+        for(int i=1; i<=n; i++) {
+            q.add(i);
         }
         
-        for(int i=1; i<=max+1; i++) {
-            queue.add(i);
-        }
-        
-        int i = 0;
-        while(true) {
-            if(i==order.length) break;
-            if(queue.peek() == order[i]) {
-                queue.poll();
-                i++;
-            }
-            else if(queue.peek() < order[i]) {
-                stack.push(queue.poll());
-            }
-            else if(queue.peek() > order[i]) {
-                if(stack.peek() == order[i]) {
-                    stack.pop();
-                    i++;
+        int idx = 0;
+        while(!q.isEmpty()) {
+            if(idx >= order.length) break;
+            if(order[idx] == q.peek()) {
+                idx++;
+                q.poll();
+            } else {
+                if(!stk.isEmpty() && stk.peek()==order[idx]) {
+                    idx++;
+                    stk.pop();
+                    // q.poll();
                 } else {
-                    break;
+                    stk.add(q.poll());
+                    // System.out.println("curIdx : " + idx + " , q.peek() : " + q.peek());
                 }
             }
         }
-        answer = i;
-        return answer;
+        int i = idx;
+        // System.out.println();
+        while(!stk.isEmpty() && i<n) {
+            System.out.println(order[i] + " , " + stk.peek());
+            if(order[i]!=stk.peek()) break;
+            idx++; i++;
+            stk.pop();
+        }
+        return idx;
     }
 }
