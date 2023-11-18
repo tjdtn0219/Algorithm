@@ -49,10 +49,14 @@ public class Main {
             }
             sb.append("\n");
         }
-        
+
         for(int i=1; i<=n; i++) {
             for(int j=1; j<=n; j++) {
-                if(dis[i][j]==0 || dis[i][j]==INF) {
+//                if(dis[i][j]==0 || dis[i][j]==INF) {
+//                    sb.append("0\n");
+//                    continue;
+//                }
+                if(nxt[i][j]==0) {
                     sb.append("0\n");
                     continue;
                 }
