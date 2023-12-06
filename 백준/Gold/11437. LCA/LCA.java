@@ -28,7 +28,8 @@ public class Main {
             tree.get(v).add(u);
         }
 
-        bfs(1);
+//        bfs(1);
+        dfs(1, 1);
 
         StringBuilder sb = new StringBuilder();
         int m = Integer.parseInt(br.readLine());
@@ -82,6 +83,16 @@ public class Main {
                 }
             }
             curDep++;
+        }
+    }
+
+    public static void dfs(int cur, int curDep) {
+        depth[cur] = curDep;
+
+        for(int adj : tree.get(cur)) {
+            if(depth[adj] > 0) continue;
+            parent[adj] = cur;
+            dfs(adj, curDep+1);
         }
     }
 }
