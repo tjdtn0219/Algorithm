@@ -20,9 +20,6 @@ public class Main {
     public void solution() {
         input();
 
-//        shake(3);
-//        System.out.println("red : " + red.x + " " + red.y);
-//        System.out.println("blue : " + blue.x + " " + blue.y);
         dfs(0);
         if(answer == MAX_CNT + 1) answer = -1;
         System.out.println(answer);
@@ -56,12 +53,11 @@ public class Main {
     }
 
     public void dfs(int k) {
+        if(blue.x == -1 && blue.y == -1) {
+            return ;
+        }
         if(red.x == -1 && red.y == -1) {
-            if(blue.x == -1 && blue.y == -1) {
-                return ;
-            } else {
-                answer = Math.min(answer, k);
-            }
+            answer = Math.min(answer, k);
         }
 
         if(k==MAX_CNT) {
