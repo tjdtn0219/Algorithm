@@ -6,9 +6,23 @@ class Solution {
     public int n;
     public int[] comb;
     public PriorityQueue<Pair> pq;
+    public int[] answer;
     
     public int[] solution(int[][] users, int[] emoticons) {
-        int[] answer = new int[2];
+        init(emoticons);
+        
+        makeComb(0, users, emoticons);
+        
+        Pair ans = pq.poll();
+        answer[0] = ans.joinCnt;
+        answer[1] = ans.profit;
+        int[] tmp = ans.discounts;
+  
+        return answer;
+    }
+    
+    public void init(int[] emoticons) {
+        answer = new int[2];
         n = emoticons.length;
         comb = new int[n];
         pq = new PriorityQueue<>((o1, o2) -> {
@@ -17,17 +31,6 @@ class Solution {
             }
             return o2.joinCnt - o1.joinCnt;
         });
-        
-        makeComb(0, users, emoticons);
-        
-        Pair ans = pq.poll();
-        answer[0] = ans.joinCnt;
-        answer[1] = ans.profit;
-        int[] tmp = ans.discounts;
-        for(int i=0; i<tmp.length; i++) {
-            System.out.print(tmp[i] + " ");
-        }
-        return answer;
     }
     
     public void func(int[][] users, int[] emojis) {
@@ -48,11 +51,8 @@ class Solution {
             } else {
                 buySum += sum;
             }
-            // System.out.println("sum : " + sum);
         }
-        if(comb.length == 4 && comb[0]==3 && comb[1]==3 && comb[2]==1 && comb[3]==3) {
-            System.out.println("TAG : " + joinCnt + " " + buySum);
-        }
+
         pq.add(new Pair(joinCnt, buySum, comb));
     }
     
