@@ -8,7 +8,6 @@ public class Main {
     int origin_n;
     int[][] board;
     int[][] originBoard;
-    boolean[] vis;
     int[] comb;
     int ans;
 
@@ -32,7 +31,6 @@ public class Main {
             board = new int[n][m];
             originBoard = new int[n][m];
             origin_n = n;
-            vis = new boolean[m];
             comb = new int[K];
             ans = 0;
             for(int i=0; i<n; i++) {
@@ -56,11 +54,8 @@ public class Main {
         }
 
         for(int i=last; i<m; i++) {
-            if(vis[i]) continue;
-            vis[i] = true;
             comb[k] = i;
             dfs(k+1, i+1);
-            vis[i] = false;
         }
     }
 
@@ -118,16 +113,7 @@ public class Main {
         else return null;
 
     }
-
-    public void print() {
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<m; j++) {
-                System.out.print(board[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
+    
 }
 
 class Enemy {
