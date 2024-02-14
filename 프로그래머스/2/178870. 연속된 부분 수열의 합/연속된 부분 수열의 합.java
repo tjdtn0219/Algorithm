@@ -28,19 +28,19 @@ class Solution {
     }
     
     public void solve(int k) {
-        PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> {
-           if(o1.gap == o2.gap) {
-               return o1.left - o2.left;
-           }            
-            return o1.gap - o2.gap;
-        });
         int left = 1;
         int right = 1;
+        int minLen = Integer.MAX_VALUE;
+        int minLeft = 0;
+        int minRight = 0;
         while(left <= right && right < arr.length) {
             int sum = sumArr[right] - sumArr[left-1];
             if(sum == k) {
-                pq.add(new Pair(left, right, right-left));
-                // System.out.println("Sum : " + sum);
+                if(right - left < minLen) {
+                    minLen = right - left;
+                    minLeft = left;
+                    minRight = right;
+                }
                 right++;
             } else if(sum > k) {
                 left++;
@@ -48,9 +48,8 @@ class Solution {
                 right++;
             }
         }
-        Pair polled = pq.poll();
-        answer[0] = polled.left - 1;
-        answer[1] = polled.right - 1;
+        answer[0] = minLeft - 1;
+        answer[1] = minRight - 1;
     }
 }
 
