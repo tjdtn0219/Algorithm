@@ -1,75 +1,93 @@
 import java.util.*;
 
 class Solution {
-
-    public static String[] use;
-    public static int ans = Integer.MAX_VALUE;
-    public static HashMap<String, Integer> hmap = new HashMap<>();
-    public static String[] weapons = {"diamond", "iron", "stone"};
+    
+    String[] use;
+    int answer;
+    HashMap<String, Integer> hmap = new HashMap<>();
+    String[] weapons;
+    int pickCnt;  //광물을 캔 곡괭이 수
+    String[] weaponComb;
+    
     
     public int solution(int[] picks, String[] minerals) {
-        int answer = 0;
         
+        init(picks, minerals);
+        // System.out.println("pickCnt : " + pickCnt);
+        makeComb(0, minerals);
+        return answer;
+    }
+    
+    public void init(int[] picks, String[] minerals) {
+        answer = Integer.MAX_VALUE;
+        hmap = new HashMap<>();
         hmap.put("diamond", picks[0]);
         hmap.put("iron", picks[1]);
         hmap.put("stone", picks[2]);
-        
-        int sum = 0;
-        for(int n : picks) {
-            sum += n;
-        }
-        
-        int N = 0;
-        if(sum*5 > minerals.length) {
-            if(minerals.length%5==0) N=minerals.length/5;
-            else N = minerals.length/5 + 1;
-        } else {
-            N = sum;
-        }
-        
-        use = new String[N];
-        
-        bTrack(N, 0, minerals);
-        
-        return answer = ans;
+        weapons = new String[]{"diamond", "iron", "stone"};
+        pickCnt = getPickCnt(picks, minerals);
+        weaponComb = new String[pickCnt];
     }
     
-    public void bTrack(int N, int k, String[] minerals) {
-        if(k==N) {
-            int sum = 0;
-            int len = minerals.length;
-            int idx = 0;
-            int i;
-            for(String w : use) {
-                for(i=idx; i<idx+5&&i<len; i++) {
-                    // System.out.println("idx : " + i + " , " + minerals[i] + " , " + w);
-                    sum += getEnergy(minerals[i], w);
-                }
-                idx += 5;
-            }
-            ans = Math.min(ans, sum);
+    public int getPickCnt(int[] picks, String[] minerals) {
+        int n = 0;
+        int pickSum = 0;
+        for(int pick : picks) {
+            pickSum += pick;
+        }
+        int mineralCnt = minerals.length;
+        if(pickSum*5 <= mineralCnt) {
+            n = pickSum;
+        } else {
+            n = mineralCnt/5;
+            if(mineralCnt%5 != 0) n++;
+        }
+        return n;
+    }
+    
+    public void makeComb(int k, String[] minerals) {
+        if(k == pickCnt) {
+            work(minerals);
             return ;
         }
         
         for(String weapon : weapons) {
-            if(hmap.get(weapon) <= 0) continue;
-            hmap.put(weapon, hmap.get(weapon)-1);
-            use[k] = weapon;
-            bTrack(N, k+1, minerals);
-            hmap.put(weapon, hmap.get(weapon)+1);
+            if(hmap.get(weapon) == 0) continue;
+            weaponComb[k] = weapon;
+            int cnt = hmap.get(weapon);
+            hmap.put(weapon, cnt-1);
+            makeComb(k+1, minerals);
+            hmap.put(weapon, cnt);
         }
     }
     
-    public int getEnergy(String mineral, String use) {
-        if(use.equals("diamond")) return 1;
-        else if(use.equals("iron")) {
+    public void work(String[] minerals) {
+        List<String> weaponList = new ArrayList<>();
+        for(String weapon : weaponComb) {
+            for(int i=0; i<5; i++) {
+                weaponList.add(weapon);
+            }
+        }
+        
+        int sum = 0;
+        int minLen = Math.min(minerals.length, weaponList.size());
+        for(int i=0; i<minLen; i++) {
+            sum += getEnergy(minerals[i], weaponList.get(i));
+        }
+        answer = Math.min(answer, sum);
+    }
+    
+    public int getEnergy(String mineral, String weapon) {
+        if(weapon.equals("diamond")) return 1;
+        else if(weapon.equals("iron")) {
             if(mineral.equals("diamond")) return 5;
             else return 1;
         }
-        else {
+        else {  //stone
             if(mineral.equals("diamond")) return 25;
             else if(mineral.equals("iron")) return 5;
             else return 1;
         }
     }
+    
 }
