@@ -1,43 +1,89 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
-public class Main{
+public class Main {
 
-    public static int[] arr;
-    public static int[] res;
-    public static int n;
+    int n;
+    int[] arr;
+    int[] dp;
+    List<Integer> stk;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        new Main().solution();
 
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
+    }
 
-        n = Integer.parseInt(bf.readLine());
-        String[] strings = bf.readLine().split(" ");
-        int[] arr = new int[n];
-        int[] dp = new int[n];         //dp[i] : i번째를 포함하는 증가하는 수열의 최대 길이
+    public void solution() {
+        input();
+        System.out.println(solve());
+    }
 
-        for(int i=0; i<n; i++) {
-            arr[i] = Integer.parseInt(strings[i]);
-            dp[i] = 1;
+    public void input() {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            n = Integer.parseInt(br.readLine());
+            arr = new int[n];
+            dp = new int[n];
+            Arrays.fill(dp, 1);
+//            for(int i=0; i<n; i++) {
+//                arr[i] = Integer.parseInt(br.readLine());
+//            }
+            String[] tmp = br.readLine().split(" ");
+            for(int i=0; i<n; i++) {
+                arr[i] = Integer.parseInt(tmp[i]);
+            }
+            stk = new ArrayList<>();
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!");
+            throw new RuntimeException(e);
         }
+    }
 
-        for(int i=1; i<n; i++) {
+    public int solve() {
+//        return LTS();
+        return LTS_DP();
+    }
+
+    public int LTS() {
+        for(int num : arr) {
+            if(stk.isEmpty()) {
+                stk.add(num);
+            } else if(stk.get(stk.size()-1) < num) {
+                stk.add(num);
+            } else {
+                int idx = lower_idx(num);
+                //size보다 클 경우
+                if(stk.size() == idx) stk.add(num);
+                else stk.set(idx, num);
+            }
+        }
+        return stk.size();
+    }
+
+    public int LTS_DP() {
+        for(int i=1; i<arr.length; i++) {
             for(int j=0; j<i; j++) {
-                if(arr[i] > arr[j]) {
-                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                if(arr[j] < arr[i]) {
+                    dp[i] = Math.max(dp[i], dp[j]+1);
                 }
             }
         }
-
-        int max = -1;
-        for(int i=0; i<n; i++) {
-            max = Math.max(max, dp[i]);
+        int result = 0;
+        for(int i=0; i<dp.length; i++) {
+            result = Math.max(result, dp[i]);
         }
+        return result;
+    }
 
-        System.out.println(max);
+    public int lower_idx (int tg) {
+        int st = 0;
+        int en = stk.size();
 
+        while(st < en) {
+            int mid = (st + en) / 2;
+            if(tg <= arr[mid]) en = mid;
+            else st = mid + 1;
+        }
+        return st;
     }
 }
