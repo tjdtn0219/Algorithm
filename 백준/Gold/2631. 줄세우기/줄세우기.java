@@ -15,8 +15,7 @@ public class Main {
 
     public void solution() {
         input();
-        int answer = arr.length - solve();
-        System.out.println(answer);
+        System.out.println(solve());
     }
 
     public void input() {
@@ -29,10 +28,6 @@ public class Main {
             for(int i=0; i<n; i++) {
                 arr[i] = Integer.parseInt(br.readLine());
             }
-//            String[] tmp = br.readLine().split(" ");
-//            for(int i=0; i<n; i++) {
-//                arr[i] = Integer.parseInt(tmp[i]);
-//            }
             stk = new ArrayList<>();
         } catch (Exception e) {
             System.out.println("INPUT ERROR!");
@@ -41,8 +36,7 @@ public class Main {
     }
 
     public int solve() {
-//        return LTS();
-        return LTS_DP();
+        return arr.length - LTS();
     }
 
     public int LTS() {
@@ -52,39 +46,60 @@ public class Main {
             } else if(stk.get(stk.size()-1) < num) {
                 stk.add(num);
             } else {
-                int idx = lower_idx(num);
+//                int idx = binarySearch(stk, num);
+//                int idx = getLowerIdx(num);
+                int idx = lowerBound(num);
                 //size보다 클 경우
-                if(stk.size() == idx) stk.add(num);
-                else stk.set(idx, num);
+//                if(idx < 0) idx = 0;
+//                if(idx >= stk.size()) idx = stk.size()-1;
+                stk.set(idx, num);
             }
         }
         return stk.size();
     }
 
-    public int LTS_DP() {
-        for(int i=1; i<arr.length; i++) {
-            for(int j=0; j<i; j++) {
-                if(arr[j] < arr[i]) {
-                    dp[i] = Math.max(dp[i], dp[j]+1);
-                }
-            }
+    public int lowerBound(int target) {
+        int left = 0;
+        int right = stk.size() - 1;
+
+        while(left < right) {
+            int mid = (left+right) / 2;
+
+            if(target < stk.get(mid)) right = mid;
+            else left = mid + 1;          //tg >= arr[mid]
         }
-        int result = 0;
-        for(int i=0; i<dp.length; i++) {
-            result = Math.max(result, dp[i]);
-        }
-        return result;
+        return left;
     }
 
-    public int lower_idx (int tg) {
-        int st = 0;
-        int en = stk.size();
+    int binarySearch(List<Integer> list, int target) {
+        int output = 0;
 
-        while(st < en) {
-            int mid = (st + en) / 2;
-            if(tg <= arr[mid]) en = mid;
-            else st = mid + 1;
+        int start = 0;
+        int end = list.size() - 1;
+
+        while (start <= end) {
+            int mid = (start + end) / 2;
+
+            if (list.get(mid) >= target) {
+                output = mid;
+                end = mid - 1;
+            } else {
+                start = mid + 1;
+            }
         }
-        return st;
+
+        return output;
+    }
+
+    public int getLowerIdx(int tg) {
+        int lo = Collections.binarySearch(stk, tg);
+        int upper, lower;
+        if(lo < 0) {
+            upper = lower = (lo + 1)*(-1);
+        } else {
+            lower = lo;
+            upper = lo + 1;
+        }
+        return lower;
     }
 }
