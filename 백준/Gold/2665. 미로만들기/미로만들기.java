@@ -7,7 +7,6 @@ public class Main {
     static final int[] dy = {0, 1, 0, -1};
     int n;
     int[][] map;
-    boolean[][] vis;
     int[][] dp;
 
     public static void main(String[] args) {
@@ -19,7 +18,6 @@ public class Main {
         bfs();
         int answer = dp[n-1][n-1];
         System.out.println(answer);
-//        printArr(dp);
     }
 
     public void input() {
@@ -31,7 +29,6 @@ public class Main {
             for(int i=0; i<n; i++) {
                 Arrays.fill(dp[i], Integer.MAX_VALUE);
             }
-            vis = new boolean[n][n];
             for (int i = 0; i < n; i++) {
                 String str = br.readLine();
                 for (int j = 0; j < n; j++) {
@@ -52,7 +49,6 @@ public class Main {
             Point polled = q.poll();
             int x = polled.x;
             int y = polled.y;
-//            System.out.println("x : " + x + ", y : " + y);
             for(int dir=0; dir<4; dir++) {
                 int nx = x + dx[dir];
                 int ny = y + dy[dir];
@@ -68,29 +64,12 @@ public class Main {
                         q.add(new Point(nx, ny));
                     }
                 }
-//                if(dp[nx][ny] > dp[x][y]) {
-//                    if(map[nx][ny] == 0) {
-//                        dp[nx][ny] = dp[x][y] + 1;
-//                    } else {
-//                        dp[nx][ny] = dp[x][y];
-//                    }
-//                    q.add(new Point(nx, ny));
-//                }
             }
         }
     }
 
     public boolean isInner(int x, int y) {
         return 0<=x && 0<=y && x<n && y<n;
-    }
-
-    public void printArr(int[][] arr) {
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
-                System.out.print(arr[i][j] + " ");
-            }
-            System.out.println();
-        }
     }
 }
 
