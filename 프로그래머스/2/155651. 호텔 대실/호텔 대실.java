@@ -1,33 +1,58 @@
-import java.util.*;
-
 class Solution {
-    public static int MAX_LEN = 62*60+10;
-    public static int[] arr = new int[MAX_LEN];
+    
+    int[] bookTime;
     
     public int solution(String[][] book_time) {
         int answer = 0;
-        
-        for(int i=0; i<book_time.length; i++) {
-            int st = TimeToAmount(book_time[i][0]);
-            int en = TimeToAmount(book_time[i][1]);
-
-            arr[st] += 1;
-            arr[en+10] += -1;
-        }
-        
-        for (int i = 1; i < MAX_LEN; i++) {
-            arr[i] += arr[i-1];
-            answer = Math.max(answer, arr[i]);
-        }
-        
+        init();
+        answer = solve(book_time);
+        // printBookTime();
         return answer;
     }
     
-    
-    public static int TimeToAmount(String time) {
-        String[] strings = time.split(":");
-        int H = Integer.parseInt(strings[0]);
-        int M = Integer.parseInt(strings[1]);
-        return 60*H + M;
+    public void init() {
+        bookTime = new int[26*60];
     }
+    
+    public int convertToInt(String time) {
+        String[] tmp = time.split(":");
+        int h = Integer.parseInt(tmp[0]);
+        int m = Integer.parseInt(tmp[1]);
+        return 60*h + m;
+    }
+    
+    public int solve(String[][] bookInfos) {
+        for(String[] bookInfo : bookInfos) {
+            int startTime = convertToInt(bookInfo[0]);
+            int endTime = convertToInt(bookInfo[1]);
+            int cleanTime = 10;
+            // System.out.println("st : " + startTime + " en : " + endTime);
+            fillBookTime(startTime, endTime + cleanTime);
+        }
+        return findMax();
+    }
+    
+    public void printBookTime() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<bookTime.length; i++) {
+            sb.append(bookTime[i] + " ");
+        }
+        System.out.println(sb);
+    }
+    
+    public int findMax() {
+        int max = 0;
+        for(int i=0; i<bookTime.length; i++) {
+            max = Math.max(max, bookTime[i]);
+        }
+        return max;
+    }
+    
+    public void fillBookTime(int start, int end) {
+        for(int i=start; i<end; i++) {
+            bookTime[i]++;
+        }
+    }
+    
+    
 }
