@@ -10,7 +10,6 @@ class Solution {
         long answer = -1;
         init(cap, n, deliveries, pickups);
         return solve();
-        // return answer;
     }
     
     public void init(int cap, int n, int[] deliveries, int[] pickups) {
@@ -30,9 +29,6 @@ class Solution {
             ans += Math.max(curDel+1, curPickUp+1) * 2;
             curDel = getNextDestination(curDel, deliveries);
             curPickUp = getNextDestination(curPickUp, pickups);
-            // System.out.println("curDel : " + curDel + " , curPickUp : " + curPickUp);
-            // printArr(deliveries);
-            // printArr(pickups);
             if(curDel == -1 && curPickUp == -1) break;
         }
         return ans;
