@@ -6,12 +6,13 @@ class Solution {
             int mod = storey % 10;
             if(mod==5) {
                 if((storey/10)%10 >= 5) {
-                    ans += 10-mod;
+                    //올림
+                    ans += 5;
                     storey /= 10;
                     storey++;
-                    // System.out.println("TAG");
                 } else {
-                    ans += mod;
+                    //버림
+                    ans += 5;
                     storey /= 10;
                 }
             } else if(mod<5) {  //버림
