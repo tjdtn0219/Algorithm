@@ -2,12 +2,27 @@ import java.util.*;
 import java.io.*;
 
 class Solution {
+    
+    int n;
+    int[] order;
+    Stack<Integer> stk;
+    Queue<Integer> q;
+    
     public int solution(int[] order) {
         
-        int n = order.length+1;
+        init(order);
+        return solve();
         
-        Stack<Integer> stk = new Stack<>();
-        Queue<Integer> q = new LinkedList<>();
+    }
+    
+    public void init(int[] order) {
+        n = order.length+1;
+        this.order = order;
+        stk = new Stack<>();
+        q = new LinkedList<>();
+    }
+    
+    public int solve() {
         for(int i=1; i<=n; i++) {
             q.add(i);
         }
