@@ -55,26 +55,14 @@ public class Main {
     }
 
     public int getSmallerNodeCnt(int node) {
-        int cnt = 0;
-        boolean[] vis = new boolean[n+1];
-        Queue<Integer> q = new LinkedList<>();
-        q.add(node);
-        while(!q.isEmpty()) {
-            int size = q.size();
-            for(int i=0; i<size; i++) {
-                int cur = q.poll();
-                for(int nxt : in.get(cur)) {
-                    if(vis[nxt]) continue;
-                    vis[nxt] = true;
-                    q.add(nxt);
-                    cnt++;
-                }
-            }
-        }
-        return cnt;
+        return getNodeCnt(node, in);
     }
 
     public int getLargerNodeCnt(int node) {
+        return getNodeCnt(node, out);
+    }
+
+    public int getNodeCnt(int node, List<List<Integer>> graph) {
         int cnt = 0;
         boolean[] vis = new boolean[n+1];
         Queue<Integer> q = new LinkedList<>();
@@ -83,7 +71,7 @@ public class Main {
             int size = q.size();
             for(int i=0; i<size; i++) {
                 int cur = q.poll();
-                for(int nxt : out.get(cur)) {
+                for(int nxt : graph.get(cur)) {
                     if(vis[nxt]) continue;
                     vis[nxt] = true;
                     q.add(nxt);
