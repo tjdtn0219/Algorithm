@@ -70,35 +70,11 @@ public class Main {
         }
     }
 
-    public void printDirections() {
-        for(int dir : directions) {
-            System.out.print(dir + " ");
-        }
-        System.out.println();
-    }
-
-    public void printSnake() {
-        StringBuilder sb = new StringBuilder();
-        int[][] tmp = new int[n][n];
-        for(Point point : snake) {
-            tmp[point.x][point.y] = 1;
-        }
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
-                sb.append(tmp[i][j]);
-            }
-            sb.append("\n");
-        }
-        System.out.print(sb.toString());
-        System.out.println("============================");
-    }
-
     public void solve() {
         while(true) {
             if(!move()) break;
             curT++;
         }
-//        System.out.println("curT : " + curT);
         System.out.println(curT+1);
     }
 
@@ -141,15 +117,6 @@ public class Main {
     }
 
 }
-
-//class Body {
-//    Point point;
-//    int dir;
-//    public Body(Point point, int dir) {
-//        this.point = point;
-//        this.dir = dir;
-//    }
-//}
 
 class Point {
     int x;
