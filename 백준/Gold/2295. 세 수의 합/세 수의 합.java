@@ -1,39 +1,69 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
-public class Main{
-    public static void main(String[] args) throws IOException {
+public class Main {
 
-        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+    int n;
+    int[] arr;
+    HashSet<Integer> combSum;
+    List<Integer> combDiff;
 
-        int n = Integer.parseInt(bf.readLine());
-        int[] a = new int[n];
-        for(int i=0; i<n; i++) {
-            a[i] = Integer.parseInt(bf.readLine());
-        }
-        Arrays.sort(a);
+    public static void main(String[] args) {
+        new Main().solution();
+    }
 
-        //a[i] + a[j] + a[l] = a[k] <=> a[i] + a[j] = a[k] - a[l]
-        List<Integer> list = new ArrayList<>();
-        for(int i=0; i<n; i++) {
-            for(int j=i; j<n; j++) {
-                list.add(a[i]+a[j]);
+    public void solution() {
+        input();
+        solve();
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            n = Integer.parseInt(br.readLine());
+            arr = new int[n];
+            for(int i=0; i<n; i++) {
+                arr[i] = Integer.parseInt(br.readLine());
             }
+            combSum = new HashSet<>();
+            combDiff = new ArrayList<>();
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
         }
-        Collections.sort(list);
-        Integer[] a2 = list.toArray(new Integer[list.size()]);
+    }
 
-//        int ans = 0;
-        for(int i=n-1; i>0; i--) {
+    public void solve() {
+        Arrays.sort(arr);
+        // x + y + z = k <=> x + y = k - z;
+        makeCombSum();
+        for(int i=n-1; i>=1; i--) {
             for(int j=i-1; j>=0; j--) {
-                if(Arrays.binarySearch(a2, a[i] - a[j]) >= 0) {
-                    System.out.println(a[i]);
+                if(combSum.contains(arr[i] - arr[j])) {
+                    System.out.println(arr[i]);
                     return ;
                 }
             }
         }
+    }
 
+
+
+    public void makeCombSum() {
+        for(int i=0; i<n-1; i++) {
+            for(int j=i; j<n; j++) {
+                combSum.add(arr[i] + arr[j]);
+            }
+        }
+//        Collections.sort(combSum);
+    }
+
+    public void makeCombDiff() {
+        for(int i=n-1; i>=1; i--) {
+            for(int j=i-1; j>=0; j--) {
+                combDiff.add(arr[i] - arr[j]);
+            }
+        }
+        Collections.sort(combDiff, Collections.reverseOrder());
     }
 }
