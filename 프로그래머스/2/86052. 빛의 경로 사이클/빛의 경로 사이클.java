@@ -1,48 +1,78 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 class Solution {
-    static boolean[][][] visited;
-    static int row, col;
-    static int[] dx = {-1, 0, 1, 0}; //아래-왼-위-오른
-    static int[] dy = {0, -1, 0, 1};
-
+    
+    static final int[] dx = {1,0,-1,0}; //남, 동, 북, 서
+    static final int[] dy = {0,1,0,-1};
+    
+    int n, m;
+    char[][] map;
+    boolean[][][] lights;
+    List<Integer> answer;
+    
     public int[] solution(String[] grid) {
-        List<Integer> answer = new ArrayList<>();
-        row = grid.length;
-        col = grid[0].length();
-        visited = new boolean[row][col][4];
-
-        for(int i=0;i<row;i++) {
-            for(int j=0;j<col;j++) {
-                for(int d=0;d<4;d++) {
-                    if(!visited[i][j][d]) {
-                        answer.add(light(grid, i, j, d));
-                    }
-                }
+        init(grid);
+        solve();
+        return answer.stream().sorted().mapToInt(i -> i).toArray();
+    }
+    
+    public void init(String[] grid) {
+        n = grid.length;
+        m = grid[0].length();
+        map = new char[n][m];
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                map[i][j] = grid[i].charAt(j);
             }
         }
-
-        return answer.stream().sorted().mapToInt(i->i).toArray();
+        lights = new boolean[n][m][4];
+        answer = new ArrayList<>();
     }
-
-    public int light(String[] grid, int i, int j, int d) {
-        int count = 0;
-
-        while(!visited[i][j][d]) {
-            count++;
-            visited[i][j][d] = true;
-
-            if(grid[i].charAt(j) == 'L') {
-                d = (d+3) % 4; //좌회전
+    
+    public void solve() {
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                for(int dir=0; dir<4; dir++) {
+                    if(lights[i][j][dir]) continue;
+                    answer.add(startLight(dir, i, j));
+                }       
             }
-            if(grid[i].charAt(j) == 'R') {
-                d = (d+1) % 4; //우회전
-            }
-            
-            i = (i+dx[d]+row) % row;
-            j = (j+dy[d]+col) % col;
         }
-        return count;
     }
+    
+    public int startLight(int dir, int x, int y) {
+        int cnt = 0;
+        
+        while(true) {
+            if(lights[x][y][dir]) break;
+            lights[x][y][dir] = true;
+            int nx = convertX(x + dx[dir]);
+            int ny = convertY(y + dy[dir]);
+            dir = getNxtDir(map[nx][ny], dir);
+            x = nx;
+            y = ny;
+            cnt++;
+        }
+        return cnt;
+    }
+    
+    public int getNxtDir(char c, int curDir) {
+        if(c=='S') return curDir;
+        else if(c=='L') return (curDir+1) % 4;
+        else if(c=='R') return (curDir+3) % 4;
+        return curDir;
+    }
+    
+    public int convertX(int x) {
+        if(x >= n) return 0;
+        else if(x < 0) return n-1;
+        return x;
+    }
+    
+    public int convertY(int y) {
+        if(y >= m) return 0;
+        else if(y < 0) return m-1;
+        return y;
+    }
+    
 }
