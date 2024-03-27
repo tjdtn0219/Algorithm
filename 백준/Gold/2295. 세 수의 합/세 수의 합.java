@@ -6,7 +6,6 @@ public class Main {
     int n;
     int[] arr;
     HashSet<Integer> combSum;
-    List<Integer> combDiff;
 
     public static void main(String[] args) {
         new Main().solution();
@@ -26,7 +25,6 @@ public class Main {
                 arr[i] = Integer.parseInt(br.readLine());
             }
             combSum = new HashSet<>();
-            combDiff = new ArrayList<>();
         } catch (Exception e) {
             System.out.println("INPUT ERROR!!");
             throw new RuntimeException(e);
@@ -55,15 +53,6 @@ public class Main {
                 combSum.add(arr[i] + arr[j]);
             }
         }
-//        Collections.sort(combSum);
     }
 
-    public void makeCombDiff() {
-        for(int i=n-1; i>=1; i--) {
-            for(int j=i-1; j>=0; j--) {
-                combDiff.add(arr[i] - arr[j]);
-            }
-        }
-        Collections.sort(combDiff, Collections.reverseOrder());
-    }
 }
