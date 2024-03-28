@@ -1,63 +1,115 @@
+import java.util.*;
+
 class Solution {
     
-    public int[] dx = {1,0,-1,0};
-    public int[] dy = {0,1,0,-1};
+    static final int[] DX = {0,1,0,-1}; //동 남 서 북
+    static final int[] DY = {1,0,-1,0};
+    static final int N = 5;
+    
+    int[][] board;
+    boolean[][] vis;
+    List<Point> people;
     
     public int[] solution(String[][] places) {
-        int[] ans = new int[5];
-        
-        for(int i=0; i<5; i++) {
-            ans[i] = loopFunc(places[i]);
+        int[] answer = new int[N];
+        for(int i=0; i<places.length; i++) {
+            answer[i] = solve(places[i]);
         }
-        
-        return ans;
+        return answer;
     }
     
-    public int loopFunc(String[] place) {
-        char[][] board = new char[5][5];
-        for(int i=0; i<5; i++) {
-            for(int j=0; j<5; j++) {
-                board[i][j] = place[i].charAt(j);
+    public int solve(String[] place) {
+        init(place);
+        // printBoard();
+        // printPeople();
+        return isKeepDistance();
+        // return 1;
+    }
+    
+    public void printPeople() {
+        for(Point p : people) {
+            System.out.println("person: " + p.x + ", " + p.y);
+        }        
+    }
+    
+    public void printBoard() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<N; i++) {
+            for(int j=0; j<N; j++) {
+                sb.append(board[i][j] + " ");
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb);
+    }
+    
+    public void init(String[] place) {
+        board = new int[N][N];
+        people = new ArrayList<>();
+        for(int i=0; i<N; i++) {
+            for(int j=0; j<N; j++) {
+                if(place[i].charAt(j) == 'P') {
+                    board[i][j] = 1;
+                    people.add(new Point(i, j));
+                }
+                else if(place[i].charAt(j) == 'X') {
+                    board[i][j] = -1;
+                }
             }
         }
-        // printBoard(board);
-        for(int i=0; i<5; i++) {
-            for(int j=0; j<5; j++) {
-                if(board[i][j]=='P') {
-                    if(!isKeepDistance(board, i, j)) return 0;
-                }
+    }
+    
+    public int isKeepDistance() {
+        for(Point person : people) {
+            if(isExistSurround(person)) {
+                return 0;
             }
         }
         return 1;
     }
     
-    public boolean isKeepDistance(char[][] board, int x, int y) {
-        for(int d1=0; d1<4; d1++) {
-            int nx1 = x + dx[d1];
-            int ny1 = y + dy[d1];
-            if(nx1<0 || ny1<0 || nx1>=5 || ny1>=5) continue;
-            if(board[nx1][ny1]=='P') return false;
-            for(int d2=0; d2<4; d2++) {
-                int nx2 = nx1 + dx[d2];
-                int ny2 = ny1 + dy[d2];
-                if(nx2<0 || ny2<0 || nx2>=5 || ny2>=5) continue;
-                if(nx2==x && ny2==y) continue;
-                if(board[nx2][ny2]=='P' && board[nx1][ny1]!='X') {
-                    return false;
+    public boolean isExistSurround(Point person) {
+        vis = new boolean[N][N];
+        Queue<Point> q = new LinkedList<>();
+        q.add(person);
+        vis[person.x][person.y] = true;
+        int depth = 0;
+        while(!q.isEmpty() && depth<2) {
+            int size = q.size();
+            for(int i=0; i<size; i++) {
+                Point cur = q.poll();
+                // if(board[cur.x][cur.y] == 1) {
+                //     System.out.println("person : " + person.x + ", " + person.y);
+                //     System.out.println("adj : " + cur.x + ", " + cur.y);
+                //     return true;
+                // }
+                for(int dir=0; dir<4; dir++) {
+                    int nx = cur.x + DX[dir];
+                    int ny = cur.y + DY[dir];
+                    if(!isInner(nx, ny)) continue;
+                    if(vis[nx][ny]) continue;
+                    if(board[nx][ny] == -1) continue;
+                    if(board[nx][ny] == 1) return true;
+                    q.add(new Point(nx, ny));
+                    vis[nx][ny] = true;
                 }
             }
+            depth++;
         }
-        return true;
+        return false;
     }
     
-    public void printBoard(char[][] board) {
-        System.out.println("==================");
-        for(int i=0; i<5; i++) {
-            for(int j=0; j<5; j++) {
-                System.out.print(board[i][j] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("==================");
+    public boolean isInner(int x, int y) {
+        return 0<=x && 0<=y && x<N && y<N;
+    }
+    
+}
+
+class Point {
+    int x;
+    int y;
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }
