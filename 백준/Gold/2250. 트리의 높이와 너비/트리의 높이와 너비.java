@@ -24,7 +24,6 @@ public class Main {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             n = Integer.parseInt(br.readLine());
             nodeMap = new HashMap<>();
-//            board = new int[n][n];
             maxDep = -1;
             idx = 0;
             parent = new int[n+1];
@@ -58,12 +57,11 @@ public class Main {
     public void solve() {
         for(int i=1; i<=n; i++) {
             if(parent[i] == -1) {
-                getMaxDep(nodeMap.get(i), 0);
+                findMaxDep(nodeMap.get(i), 0);
                 this.board = new int[maxDep+1][n];
                 inOrderTraversal(nodeMap.get(i), 0);
             }
         }
-//        printBoard();
         int[] ans = getMaxWidth();
         System.out.println((ans[0]+1) + " " + ans[1]);
     }
@@ -98,24 +96,13 @@ public class Main {
         return ans;
     }
 
-    public void printBoard() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<=maxDep; i++) {
-            for(int j=0; j<n; j++) {
-                sb.append(board[i][j] + " ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
-    }
-
-    public void getMaxDep(TreeNode node, int dep) {
+    public void findMaxDep(TreeNode node, int dep) {
         //중위순회
         if(node == null) return ;
 
-        getMaxDep(node.left, dep+1);
+        findMaxDep(node.left, dep+1);
         maxDep = Math.max(maxDep, dep);
-        getMaxDep(node.right, dep+1);
+        findMaxDep(node.right, dep+1);
     }
 
     public void inOrderTraversal(TreeNode node, int dep) {
@@ -123,8 +110,6 @@ public class Main {
         if(node == null) return ;
 
         inOrderTraversal(node.left, dep+1);
-//        System.out.println("Val : " + node.val + " , dep : " + dep);
-//        maxDep = Math.max(maxDep, dep);
         board[dep][idx++] = node.val;
         inOrderTraversal(node.right, dep+1);
     }
