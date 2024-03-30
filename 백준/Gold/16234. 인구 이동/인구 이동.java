@@ -52,27 +52,9 @@ public class Main {
             openLine();
             if(!isMoveFlag) break;
             answer++;
-//            printTeam();
         }
         System.out.println(answer);
 
-    }
-
-    public void printTeamMap(HashMap<Integer, Integer> teamMap) {
-        for(int key : teamMap.keySet()) {
-            System.out.println("key : " + key + ", val : " + teamMap.get(key));
-        }
-    }
-
-    public void printTeam() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
-                sb.append(team[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
     }
 
     public void openLine() {
@@ -83,12 +65,10 @@ public class Main {
             for(int j=0; j<n; j++) {
                 if(vis[i][j]) continue;
                 int avg = bfs(i, j, teamNum, vis);
-//                System.out.println("Avg : " + avg);
                 teamMap.put(teamNum++, avg);
             }
         }
         distributePopulation(teamMap);
-//        printTeamMap(teamMap);
     }
 
     public void distributePopulation(HashMap<Integer, Integer> teamMap) {
@@ -147,14 +127,5 @@ class Point {
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-}
-
-class TeamInfo {
-    int sum;
-    int cnt;
-    public TeamInfo(int sum, int cnt) {
-        this.sum = sum;
-        this.cnt = cnt;
     }
 }
