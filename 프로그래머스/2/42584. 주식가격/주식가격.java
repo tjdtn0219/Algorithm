@@ -1,33 +1,54 @@
 import java.util.*;
 
 class Solution {
+    
+    int n;
+    int[] prices;
+    int[] answer;
+    
     public int[] solution(int[] prices) {
-        int n = prices.length;
-        
-        int[] answer = new int[n];
-        for(int i=0; i<n; i++) {
-            answer[i] = n-1-i;
-        }
-        
-        Stack<Pair> stk = new Stack<>();
-        
-        stk.add(new Pair(0, prices[0]));
-        for(int i=1; i<n; i++) {
-            while(!stk.isEmpty() && stk.peek().val > prices[i]) {
-                answer[stk.peek().idx] = i - stk.peek().idx;
-                stk.pop();
-            }
-            stk.add(new Pair(i, prices[i]));
-        }
-        
+        init(prices);
+        solve();
         return answer;
+    }
+    
+    public void init(int[] prices) {
+        this.n = prices.length;
+        this.prices = prices;
+        this.answer = new int[n];
+    }
+    
+    public void solve() {
+        Stack<Info> stk = new Stack<>();
+        for(int i=0; i<n; i++) {
+            int price = prices[i];
+            if(stk.isEmpty()) {
+                stk.add(new Info(i, price));
+            } else {
+                if(stk.peek().val <= price) {
+                    stk.add(new Info(i, price));
+                } else {
+                    while(!stk.isEmpty() && stk.peek().val > price) {
+                        Info popped = stk.pop();
+                        answer[popped.idx] = i - popped.idx;    
+                    }
+                    stk.add(new Info(i, price));
+                }
+            }
+        }
+        for(Info info : stk) {
+            // System.out.println("idx : " + info.idx + ", val : " + info.val);
+            answer[info.idx] = (n-1) - info.idx;
+        }
+        
     }
 }
 
-class Pair {
+class Info {
     int idx;
     int val;
-    public Pair(int idx, int val) {
+    
+    public Info(int idx, int val) {
         this.idx = idx;
         this.val = val;
     }
