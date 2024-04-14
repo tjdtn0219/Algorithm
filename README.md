@@ -1,2 +1,2 @@
 # My_BackJoon
-This is my solution guide for BackJoon
+This is my solutions for Backjoon, Programmers
