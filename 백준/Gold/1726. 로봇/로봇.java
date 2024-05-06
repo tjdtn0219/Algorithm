@@ -19,22 +19,6 @@ public class Main {
         input();
         initDP();
         solve();
-//        System.out.println("startPoint : " + startPoint.x + ", " + startPoint.y + ", " + startPoint.dir);
-//        System.out.println("endPoint : " + endPoint.x + ", " + endPoint.y + ", " + endPoint.dir);
-//        printDP();
-    }
-
-    public void printDP() {
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<m; j++) {
-                System.out.print(i + ", " + j + " : ");
-                for(int k=1; k<=4; k++) {
-                    System.out.print(dp[i][j][k] + " ");
-                }
-                System.out.println();
-            }
-            System.out.println();
-        }
     }
 
     public void input() {
@@ -131,15 +115,6 @@ public class Main {
         return 0<=x && 0<=y && x<n && y<m;
     }
 
-}
-
-class Node {
-    Point point;
-    int dir;
-    public Node(Point point, int dir) {
-        this.point = point;
-        this.dir = dir;
-    }
 }
 
 class Point {
