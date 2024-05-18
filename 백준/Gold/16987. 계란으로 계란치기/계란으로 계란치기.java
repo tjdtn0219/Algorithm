@@ -27,7 +27,7 @@ public class Main {
                 String[] tmp = br.readLine().split(" ");
                 int s = Integer.parseInt(tmp[0]);
                 int w = Integer.parseInt(tmp[1]);
-                eggList.add(new Egg(s, w));
+                eggList.add(new Egg(i, s, w));
             }
             broken = new boolean[n];
             cnt = 0;
@@ -39,122 +39,75 @@ public class Main {
     }
 
     public void solve() {
+        for(int i=0; i<eggList.size(); i++) {
+//            System.out.println("i : " + i + ", egg.idx : " + eggList.get(i).idx);
+        }
         dfs(0);
         System.out.println(answer);
     }
 
-    public void dfs(int k) {
+    public void dfs(int curIdx) {
 
-        if(k==n) {
+        if(curIdx==n) {
             answer = Math.max(answer, cnt);
             return ;
         }
 
-        if(broken[k] || cnt==n-1) {
-            dfs(k+1);
+        if(broken[curIdx] || cnt==n-1) {
+            dfs(curIdx+1);
             return;
         }
 
         for(int i=0; i<n; i++) {
-            if(i==k) continue;
+            if(i==curIdx) continue;
             if(!broken[i]) {
-                crush(eggList.get(k), eggList.get(i));
-                if(eggList.get(k).s <= 0) {
-                    broken[k] = true;
-                    cnt++;
-                }
-                if(eggList.get(i).s <= 0) {
-                    broken[i] = true;
-                    cnt++;
-                }
-                dfs(k+1);
-                rollBack(eggList.get(k), eggList.get(i));
-                if(broken[k]) {
-                    broken[k] = false;
-                    cnt--;
-                }
-                if(broken[i]) {
-                    broken[i] = false;
-                    cnt--;
-                }
+                crush(eggList.get(curIdx), eggList.get(i));
+                dfs(curIdx+1);
+//                System.out.println("=============\ncurIdx : " + curIdx + ", i : " + i);
+//                System.out.println("egg1.Idx : " + eggList.get(curIdx).idx + ", egg2.idx : " + eggList.get(i).idx);
+                rollBack(eggList.get(curIdx), eggList.get(i));
 
             }
         }
 //        System.out.println("k: " + k + " cnt: " + cnt);
     }
 
-    public static void rollBack(Egg e1, Egg e2) {
+    public void rollBack(Egg e1, Egg e2) {
+//        System.out.println("rollback------e1.idx : " + e1.idx + ", e2.idx : " + e2.idx);
         e1.s += e2.w;
         e2.s += e1.w;
+        if(broken[e1.idx]) {
+            broken[e1.idx] = false;
+            cnt--;
+        }
+        if(broken[e2.idx]) {
+            broken[e2.idx] = false;
+            cnt--;
+        }
     }
 
-    public static void crush(Egg e1, Egg e2) {
+    public void crush(Egg e1, Egg e2) {
         e1.s -= e2.w;
         e2.s -= e1.w;
+        if(e1.s <= 0) {
+            broken[e1.idx] = true;
+            cnt++;
+        }
+        if(e2.s <= 0) {
+            broken[e2.idx] = true;
+            cnt++;
+        }
     }
 }
 
 class Egg {
+    int idx;
     int s;
     int w;
-    public Egg(int s, int w) {
+    public Egg(int idx, int s, int w) {
+        this.idx = idx;
         this.s = s;
         this.w = w;
     }
 }
 
-
-//    public void dfs(int curIdx) {
-////        System.out.println("curIdx : " + curIdx);
-//
-//        if(curIdx == n) {
-//            int cnt = 0;
-//            for(int i=0; i<n; i++) {
-//                if(isBroken[i]) cnt++;
-//            }
-////            System.out.println("cnt : " + cnt);
-//            answer = Math.max(answer, cnt);
-//            return ;
-//        }
-//
-//        if(isBroken[curIdx]) {
-//            dfs(curIdx + 1);
-//        }
-//
-//        for(int i=0; i<n; i++) {
-//            if(curIdx == i) continue;
-//            if(isBroken[i]) continue;
-////            System.out.println("i : " + i);
-//            crush(eggList.get(curIdx), eggList.get(i));
-//            dfs(curIdx+1);
-//            rollback(eggList.get(curIdx), eggList.get(i));
-//        }
-//    }
-//
-//    public void crush(Egg egg1, Egg egg2) {
-//        egg1.s -= egg2.w;
-//        egg2.s -= egg1.w;
-//        if(egg1.s <= 0) isBroken[egg1.idx] = true;
-//        if(egg2.s <= 0) isBroken[egg2.idx] = true;
-//    }
-//
-//    public void rollback(Egg egg1, Egg egg2) {
-//        egg1.s += egg2.w;
-//        egg2.s += egg1.w;
-//        if(egg1.s > 0) isBroken[egg1.idx] = false;
-//        if(egg2.s > 0) isBroken[egg2.idx] = false;
-//    }
-//
-//}
-//
-//class Egg {
-//    int idx;
-//    int s;
-//    int w;
-//
-//    public Egg(int idx, int s, int w) {
-//        this.idx = idx;
-//        this.s = s;
-//        this.w = w;
-//    }
-//}
