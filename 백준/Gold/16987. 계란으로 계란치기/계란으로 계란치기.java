@@ -49,6 +49,10 @@ public class Main {
     public void dfs(int curIdx) {
 
         if(curIdx==n) {
+//            cnt = 0;
+//            for(int i=0; i<n; i++) {
+//                if(broken[i]) cnt++;
+//            }
             answer = Math.max(answer, cnt);
             return ;
         }
@@ -63,17 +67,13 @@ public class Main {
             if(!broken[i]) {
                 crush(eggList.get(curIdx), eggList.get(i));
                 dfs(curIdx+1);
-//                System.out.println("=============\ncurIdx : " + curIdx + ", i : " + i);
-//                System.out.println("egg1.Idx : " + eggList.get(curIdx).idx + ", egg2.idx : " + eggList.get(i).idx);
                 rollBack(eggList.get(curIdx), eggList.get(i));
 
             }
         }
-//        System.out.println("k: " + k + " cnt: " + cnt);
     }
 
     public void rollBack(Egg e1, Egg e2) {
-//        System.out.println("rollback------e1.idx : " + e1.idx + ", e2.idx : " + e2.idx);
         e1.s += e2.w;
         e2.s += e1.w;
         if(broken[e1.idx]) {
