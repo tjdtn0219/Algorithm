@@ -1,56 +1,72 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    public static int n;
-    public static int[] sum;
-    public static int[] arr;
+    int n, m;
+    int[] lectures;
+    int[] sums;
+    int max;
 
-    public static void main(String[] args) throws IOException {
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        String[] strings = br.readLine().split(" ");
-        n = Integer.parseInt(strings[0]);
-        int m = Integer.parseInt(strings[1]);
-
-        strings = br.readLine().split(" ");
-        arr = new int[n];
-        sum = new int[n];
-        for(int i=0; i<n; i++) arr[i] = Integer.parseInt(strings[i]);
-
-        sum[0] = arr[0];
-        int st = arr[0];      //arr[i] 중 최고 값
-        for(int i=1; i<n; i++) {
-            sum[i] = sum[i-1] + arr[i];
-            st = Math.max(st, arr[i]);
-        }
-        int en = sum[n-1];
-
-        while(st < en) {
-            int mid = (st+en)/2;
-//            System.out.println("mid : " + mid + " , " + getCount(mid));
-            if(getCount(mid) <= m) {
-                en = mid;
-            } else {
-                st = mid+1;
-            }
-        }
-
-        System.out.println(st);
+    public static void main(String[] args) {
+        new Main().solution();
     }
 
-    public static int getCount(int maxBlueRay) {
-        int count = 1;
-        int remain = maxBlueRay;
-        for (int i = 0; i < n; i++) {
-            if (remain < arr[i]) {
-                remain = maxBlueRay;
-                count++;
-            }
-            remain -= arr[i];
+    public void solution() {
+        input();
+        init();
+        solve();
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] tmp = br.readLine().split(" ");
+            n = Integer.parseInt(tmp[0]);
+            m = Integer.parseInt(tmp[1]);
+            lectures = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!!");
+            throw new RuntimeException(e);
         }
-        return count;
+    }
+
+    public void init() {
+        sums = new int[n];
+        max = lectures[0];
+        sums[0] = lectures[0];
+        for(int i=1; i<n; i++) {
+            sums[i] = sums[i-1] + lectures[i];
+            max = Math.max(max, lectures[i]);
+        }
+    }
+
+    public void solve() {
+        System.out.println(findMinSize());
+    }
+
+    public int findMinSize() {
+        int st = max;
+        int en = sums[n-1];
+
+        while(st < en) {
+            int mid = (st + en) / 2;
+            if(getCount(mid) <= m) en = mid;
+            else st = mid + 1;
+        }
+
+        return st;
+    }
+
+    public int getCount(int size) {
+        int cnt = 1;
+        int minusSum = 0;
+        for(int i=0; i<n; i++) {
+            if(size < sums[i] - minusSum) {
+                minusSum = sums[--i];
+                cnt++;
+            }
+        }
+        return cnt;
     }
 }
