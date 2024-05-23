@@ -9,17 +9,16 @@ public class Main {
 
     public static void main(String[] args) {
         new Main().solution();
-
     }
 
     public void solution() {
         input();
-        System.out.println(solve());
+        solve();
     }
 
     public void input() {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String[] tmp = br.readLine().split(" ");
             n = Integer.parseInt(tmp[0]);
             m = Integer.parseInt(tmp[1]);
@@ -29,22 +28,21 @@ public class Main {
                 graph.add(new ArrayList<>());
             }
             for(int i=0; i<m; i++) {
-                //n1 ----> n2
                 tmp = br.readLine().split(" ");
-                int n1 = Integer.parseInt(tmp[0]);
-                int n2 = Integer.parseInt(tmp[1]);
-                graph.get(n1).add(n2);
-                inDegree[n2]++;
+                int u = Integer.parseInt(tmp[0]);
+                int v = Integer.parseInt(tmp[1]);
+                graph.get(u).add(v);
+                inDegree[v]++;
             }
         } catch (Exception e) {
-            System.out.println("INPUT ERROR!");
+            System.out.println("INPUT ERROR!!!");
             throw new RuntimeException(e);
         }
     }
 
-    public String solve() {
-        //topologicalSort 위상 정렬
-        StringBuilder sb = new StringBuilder();
+    public void solve() {
+        List<Integer> list = new ArrayList<>();
+
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         for(int i=1; i<=n; i++) {
             if(inDegree[i] == 0) {
@@ -54,15 +52,23 @@ public class Main {
 
         while(!pq.isEmpty()) {
             int cur = pq.poll();
-            sb.append(cur + " ");
+            list.add(cur);
             for(int nxt : graph.get(cur)) {
                 inDegree[nxt]--;
-                if(inDegree[nxt] == 0) pq.add(nxt);
+                if(inDegree[nxt] == 0) {
+                    pq.add(nxt);
+                }
             }
         }
 
-        return sb.toString();
-
+        printAnswer(list);
     }
 
+    private static void printAnswer(List<Integer> answerList) {
+        StringBuilder sb = new StringBuilder();
+        for(int num : answerList) {
+            sb.append(num + " ");
+        }
+        System.out.println(sb);
+    }
 }
