@@ -1,40 +1,64 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] strings = br.readLine().split(" ");
+    int n, k;
+    int[] arr;
+    int maxLen;
 
-        int k = Integer.parseInt(strings[0]);
-        int n = Integer.parseInt(strings[1]);
+    public static void main(String[] args) {
+        new Main().solution();
+    }
 
-        int[] arr = new int[k];
-        int max = 0;
-        for(int i=0; i<k; i++) {
-            arr[i] = Integer.parseInt(br.readLine());
-            max = Math.max(arr[i], max);
-        }
+    public void solution() {
+        input();
+        solve();
+    }
 
-        long st = 1;
-        long en = max;
-        long ans = 0;
-        while(st <= en) {
-            long mid = (st + en)/2;
-            int cnt = 0;
-            for(int num : arr) {
-                cnt += num / mid;
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] tmp = br.readLine().split(" ");
+            k = Integer.parseInt(tmp[0]);
+            n = Integer.parseInt(tmp[1]);
+            maxLen = 0;
+            arr = new int[k];
+            for(int i=0; i<k; i++) {
+                arr[i] = Integer.parseInt(br.readLine());
+                maxLen = Math.max(maxLen, arr[i]);
             }
-            if(cnt>=n) {
+
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void solve() {
+        long ans = 0;
+        long st = 1;
+        long en = maxLen;
+        while(st <= en) {
+            long mid = (st + en) / 2;
+            int cnt = getCnt(mid);
+//            System.out.println("cnt : " + cnt + ", mid : " + mid);
+            if(cnt >= n) {
                 ans = Math.max(ans, mid);
                 st = mid + 1;
-
             } else {
-                en = mid-1;
+                en = mid - 1;
             }
         }
+//        System.out.println("st : " + st);
         System.out.println(ans);
+    }
 
+    public int getCnt(long len) {
+        int cnt = 0;
+        for(int num : arr) {
+            cnt += num / len;
+        }
+        return cnt;
     }
 }
