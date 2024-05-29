@@ -42,7 +42,6 @@ public class Main {
     }
 
     public void solve() {
-//        bfs();
         vis[0][0] = true;
         set.add(board[0][0]);
         int ans = dfs(0, 0);
@@ -75,45 +74,7 @@ public class Main {
 
     }
 
-    public void bfs() {
-        boolean[][] vis = new boolean[n][m];
-        Queue<Point> q = new LinkedList<>();
-        q.add(new Point(0, 0));
-        vis[0][0] = true;
-        set.add(board[0][0]);
-        int cnt = 0;
-
-        while(!q.isEmpty()) {
-            int size = q.size();
-            for(int i=0; i<size; i++) {
-                Point cur = q.poll();
-                for(int dir=0; dir<4; dir++) {
-                    int nx = cur.x + DX[dir];
-                    int ny = cur.y + DY[dir];
-                    if(!isInner(nx, ny)) continue;
-                    if(vis[nx][ny]) continue;
-                    if(set.contains(board[nx][ny])) continue;
-                    q.add(new Point(nx, ny));
-                    vis[nx][ny] = true;
-                    set.add(board[nx][ny]);
-                }
-                cnt++;
-            }
-        }
-
-        System.out.println("cnt : " + cnt);
-    }
-
     public boolean isInner(int x, int y) {
         return 0<=x && 0<=y && x<n && y<m;
-    }
-}
-
-class Point {
-    int x;
-    int y;
-    public Point(int x, int y) {
-        this.x = x;
-        this.y = y;
     }
 }
