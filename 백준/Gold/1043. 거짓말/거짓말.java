@@ -70,16 +70,6 @@ public class Main {
         }
     }
 
-    public void printParent() {
-        for(List<Integer> party : parties) {
-            Collections.sort(party);
-            for(int i=0; i<party.size(); i++) {
-                System.out.print(party.get(i) + " ");
-            }
-            System.out.println();
-        }
-    }
-
     public void fillIsKnowTrue() {
         for(int i=0; i<MAX_LEN; i++) {
             if(isKnowTrue[i]) {
