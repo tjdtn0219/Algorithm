@@ -36,7 +36,6 @@ public class Main {
     }
 
     public void solve() {
-//        System.out.println("n : " + n + ", l : " + l);
         int ans = 0;
         for(int i=0; i<n; i++) {
             int[] road = new int[n];
@@ -47,10 +46,7 @@ public class Main {
             if(isRoad(road, isHill)) {
                 ans++;
             }
-//            printRoad(road);
         }
-
-//        System.out.println("\nmid : " + ans + "\n");
 
         for(int j=0; j<n; j++) {
             int[] road = new int[n];
@@ -58,12 +54,9 @@ public class Main {
             for(int i=0; i<n; i++) {
                 road[i] = map[i][j];
             }
-//            if(j != 0) continue;
             if(isRoad(road, isHill)) {
-//                System.out.println("true j : " + j);
                 ans++;
             }
-//            System.out.print("j : " + j + ", "); printRoad(road); printIsHill(isHill);
         }
 
         System.out.println(ans);
@@ -77,12 +70,9 @@ public class Main {
             else if(nxt < cur-1 || cur+1 < nxt) {
                 return false;
             } else {
-//                System.out.println("cur : " + cur + ", nxt : " + nxt);
                 if(cur < nxt) {
-//                    System.out.println("TAG : UpHill");
                     if(!makeUpHill(road, isHill, i)) return false;
                 } else {
-//                    System.out.println("TAG : DownHill");
                     if(!makeDownHill(road, isHill, i-1)) return false;
                 }
                 cur = nxt;
@@ -91,28 +81,8 @@ public class Main {
         return true;
     }
 
-    public void printRoad(int[] road) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("road : ");
-        for(int n : road) {
-            sb.append(n).append(" ");
-        }
-        System.out.println(sb);
-    }
-
-    public void printIsHill(boolean[] isHill) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("isHill : ");
-        for(boolean t : isHill) {
-            sb.append(t).append(" ");
-        }
-        System.out.println(sb);
-    }
-
     public boolean makeUpHill(int[] road, boolean[] isHill, int stdIdx) {
-//        System.out.println("stdIdx : " + stdIdx);
         int floor = road[stdIdx] - 1;
-//        System.out.println("floor : " + floor);
         if(!isInner(stdIdx - l)) {
             return false;
         }
@@ -129,7 +99,6 @@ public class Main {
 
     public boolean makeDownHill(int[] road, boolean[] isHill, int stdIdx) {
         int floor = road[stdIdx] - 1;
-//        System.out.println("floor : " + floor);
         if(!isInner(stdIdx + l)) {
             return false;
         }
