@@ -67,20 +67,7 @@ public class Main {
             }
             sb.append("\n");
         }
-//        System.out.println(sb + "================================\n");
         System.out.println(sb);
-    }
-
-    public void printVis(boolean[][] vis) {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<m; j++) {
-                if(vis[i][j]) sb.append(1);
-                else sb.append(0);
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb + "================================\n");
     }
 
     public void moveCluster() {
@@ -92,7 +79,6 @@ public class Main {
             dfs1(n-1, j, vis);
         }
 
-//        printVis(vis);
 
         for(int i=0; i<n; i++) {
             //공중 클러스터 찾기
@@ -100,8 +86,6 @@ public class Main {
                 if(vis[i][j] || map[i][j] == '.') continue;
                 List<Point> cluster = dfs2(i, j);
                 setDownCluster(cluster, vis);
-//                System.out.println("After Down : ");
-//                printMap();
             }
         }
 
@@ -110,31 +94,11 @@ public class Main {
     public void setDownCluster(List<Point> cluster, boolean[][] vis) {
         deleteClusterInMap(cluster);
         while(isEnableDown(cluster)) {
-//            printCluster(cluster);
             for (Point point : cluster) {
                 point.x++;
             }
-//            System.out.println("After Down +1 : ");
-//            printMap();
-//            printCluster(cluster);
         }
-//        printCluster(cluster);
         fillClusterInMap(cluster, vis);
-    }
-
-    public void printCluster(List<Point> cluster) {
-        char[][] tmp = new char[n][m];
-        StringBuilder sb = new StringBuilder();
-        for(Point p : cluster) {
-            tmp[p.x][p.y] = 'x';
-        }
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<m; j++) {
-                sb.append(tmp[i][j]);
-            }
-            sb.append("\n");
-        }
-        System.out.println("Cluster : \n" + sb + "\n");
     }
 
     public void fillClusterInMap(List<Point> cluster, boolean[][] vis) {
