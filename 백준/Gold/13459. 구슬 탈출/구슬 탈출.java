@@ -69,7 +69,6 @@ public class Main {
 
     public void dfs(int k, int last) {
         if(k==10) {
-//            printComb();
             ans |= move();
             initBall();
             return ;
@@ -82,11 +81,6 @@ public class Main {
         }
     }
 
-    public void printBall() {
-        System.out.println("red : " + red.x + ", " + red.y);
-        System.out.println("blue : " + blue.x + ", " + blue.y);
-    }
-
     public boolean move() {
         //남 동 북 서
         for(int dir : comb) {
@@ -94,7 +88,6 @@ public class Main {
             else if(dir == 1) moveRight();
             else if(dir == 2) moveUp();
             else moveLeft();
-//            printBall();
             if(blue.x==-1 && blue.y==-1) {
                 return false;
             } else if((red.x==-1 && red.y==-1) && !(blue.x==-1 && blue.y==-1)) {
@@ -162,7 +155,6 @@ public class Main {
             otherY = red.y;
         }
         while(true) {
-//            System.out.println("cur : " + x + ", " + y);
             int nx = x + DX[dir];
             int ny = y + DY[dir];
             if(board[nx][ny] == 'O') {
@@ -182,13 +174,6 @@ public class Main {
         }
     }
 
-    public void printComb() {
-        StringBuilder sb = new StringBuilder();
-        for(int n : comb) {
-            sb.append(n + " ");
-        }
-        System.out.println(sb);
-    }
 }
 
 
