@@ -35,10 +35,6 @@ public class Main {
     }
 
     public void solve() {
-//        System.out.println(isLocated(1));
-//        System.out.println(isLocated(2));
-//        System.out.println(isLocated(3));
-//        System.out.println(isLocated(4));
         bSearch();
     }
 
