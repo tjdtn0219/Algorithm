@@ -62,17 +62,17 @@ public class Main {
 //        for(boolean t : states) {
 //            System.out.println(t);
 //        }
-        initState();
+//        initState();
 //        for(boolean t : states) {
 //            System.out.print(t + " ");
 //        }
 //        System.out.println("\n============");
 
         for(int[] command : commands) {
+            initState();
             int idx = command[0] - 1;
             int dir = command[1];
             rotate(idx, dir, new boolean[4]);
-            initState();
 //            for(boolean t : states) {
 //                System.out.print(t + " ");
 //            }
