@@ -1,4 +1,4 @@
-//문제링크 : https://softeer.ai/practice/6274
+//문제 링크 : https://softeer.ai/practice/6274
 import java.io.*;
 import java.util.*;
 
@@ -39,10 +39,8 @@ public class Main {
             for(int i=0; i<N*N; i++) {
                 int r = i / N;
                 int c = i % N;
-//                System.out.println("r, c : " + r + ", " + c);
                 tmp = br.readLine().split(" ");
                 for(int k=0; k<4; k++) {
-//                    System.out.println("tmp[k] : " + tmp[k]);
                     trafficArr[r][c][k] = Integer.parseInt(tmp[k]);
                 }
             }
