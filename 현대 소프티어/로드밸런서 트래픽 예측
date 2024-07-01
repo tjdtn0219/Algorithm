@@ -1,0 +1,111 @@
+/* https://softeer.ai/practice/6263 */
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    int N;
+    long K;
+    HashMap<Integer, List<Integer>> graph;
+    int[] inDegree;
+    long[] trafficCounts;
+
+    public static void main(String[] args) {
+        new Main().solution();
+    }
+
+    public void solution() {
+        input();
+        solve();
+    }
+
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] N_K = br.readLine().split(" ");
+            N = Integer.parseInt(N_K[0]);
+            K = Long.parseLong(N_K[1]);
+
+            trafficCounts = new long[N+1];
+            inDegree = new int[N+1];
+            graph = new HashMap<>();
+            for(int i=1; i<=N; i++) {
+                int[] arr = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+                List<Integer> list = new ArrayList<>();
+                for(int j=1; j<arr.length; j++) {
+                    list.add(arr[j]);
+                    inDegree[arr[j]]++;
+                }
+                graph.put(i, list);
+            }
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!!!!!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void solve() {
+        // printInDegree();
+        List<Integer> sortedList = topologicalSort();
+        // printSorted(sortedList);
+        trafficCounts[1] = K;
+        for(int node : sortedList) {
+            if(graph.get(node).isEmpty()) continue;
+            long traffic = trafficCounts[node];
+            int childCnt = graph.get(node).size();
+            long quotient = traffic / childCnt;
+            long remainder = traffic % childCnt;
+            for(int child : graph.get(node)) {
+                trafficCounts[child] += quotient;
+            }
+            for(int i=0; i<remainder; i++) {
+                int child = graph.get(node).get(i);
+                trafficCounts[child] += 1;
+            }
+        }
+
+        printTrafficCounts();
+    }
+
+    public void printTrafficCounts() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=1; i<trafficCounts.length; i++) {
+            sb.append(trafficCounts[i]).append(" ");
+        }
+        System.out.println(sb);
+    }
+
+    public void printInDegree() {
+        StringBuilder sb = new StringBuilder();
+        for(int num : inDegree) {
+            sb.append(num).append(" ");
+        }
+        System.out.println(sb);
+    }
+
+    public void printSorted(List<Integer> list) {
+        StringBuilder sb = new StringBuilder();
+        for(int num : list) {
+            sb.append(num).append(" ");
+        }
+        System.out.println(sb);
+    }
+
+    public List<Integer> topologicalSort() {
+        List<Integer> sortedList = new ArrayList<>();
+        Queue<Integer> q = new LinkedList<>();
+        q.add(1);
+
+        while(!q.isEmpty()) {
+            int cur = q.poll();
+            sortedList.add(cur);
+            for(int child : graph.get(cur)) {
+                inDegree[child]--;
+                if(inDegree[child] == 0) q.add(child);
+            }
+        }
+
+        return sortedList;
+    }
+}
