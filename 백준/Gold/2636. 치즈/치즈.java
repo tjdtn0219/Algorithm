@@ -37,14 +37,12 @@ public class Main {
     }
 
     public void solve() {
-        // printBoard();
         int time = 0;
         int cnt = 0;
         while(true) {
             time++;
             boolean[][] isAirArr = getAir();
             List<Point> sidePoints = getSidePoints(isAirArr);
-            // printSide(sidePoints);
             melt(sidePoints);
             cnt = sidePoints.size();
             if(isClear()) break;
@@ -52,34 +50,6 @@ public class Main {
         System.out.println(time);
         System.out.println(cnt);
 
-    }
-
-    public void printBoard() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<N; i++) {
-            for(int j=0; j<M; j++) {
-                sb.append(board[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
-        System.out.println("==================================");
-    }
-
-    public void printSide(List<Point> sidePoints) {
-        int[][] board = new int[N][M];
-        for(Point point : sidePoints) {
-            board[point.x][point.y] = 1;
-        }
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<N; i++) {
-            for(int j=0; j<M; j++) {
-                sb.append(board[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
-        System.out.println("==================================");
     }
 
     public boolean isClear() {
@@ -93,7 +63,6 @@ public class Main {
 
     public void melt(List<Point> sidePoints) {
         for(Point point : sidePoints) {
-            // System.out.println("side point x, y : " + point.x + ", " + point.y);
             board[point.x][point.y] = 0;
         }
     }
@@ -102,15 +71,11 @@ public class Main {
         List<Point> sidePoints = new ArrayList<>();
         for(int i=0; i<N; i++) {
             for(int j=0; j<M; j++) {
-                // System.out.println("i, j : " + i + ", " + j);
                 if(board[i][j] == 1) {
-                    // System.out.println("TAG");
                     for(int dir=0; dir<4; dir++) {
                         int nx = i + DX[dir];
                         int ny = j + DY[dir];
-                        // System.out.println("isArr[nx][ny] : " + isAirArr[nx][ny]);
                         if(isAirArr[nx][ny]) {
-                            // System.out.println("sidePoint.add x, y : " + i + ", " + j);
                             sidePoints.add(new Point(i, j));
                             break;
                         }
