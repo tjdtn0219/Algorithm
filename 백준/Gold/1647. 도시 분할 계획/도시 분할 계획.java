@@ -31,7 +31,6 @@ public class Main {
                 int A = A_B_C[0];
                 int B = A_B_C[1];
                 int C = A_B_C[2];
-                // System.out.println(A + " " + B + " " + C);
                 pathList.add(new Node(A, B, C));
             }
 
@@ -52,18 +51,14 @@ public class Main {
         int ans = 0;
         int maxCost = 0;
         for(Node node : pathList) {
-            // System.out.println(node.a + " " + node.b + " " + node.c);
             int u = node.a;
             int v = node.b;
             if(find(u) != find(v)) {
-                // System.out.println("find[u] : " + find(u) + ", find[v] : " + find(v));
-                // System.out.println("union : " + u + ", " + v);
                 union(u, v);
                 ans += node.c;
                 maxCost = Math.max(maxCost, node.c);
             }
         }
-        // System.out.println(ans + ", " + maxCost);
         ans -= maxCost;
         System.out.println(ans);
     }
@@ -71,7 +66,7 @@ public class Main {
 
     public int find(int x) {
         if(parents[x] == x) return x;
-        else return parents[x] = find(parents[x]);
+        else return find(parents[x]);
     }
 
     public void union(int u, int v) {
