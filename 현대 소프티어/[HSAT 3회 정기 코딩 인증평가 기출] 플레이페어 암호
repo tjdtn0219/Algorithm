@@ -1,0 +1,140 @@
+/* https://softeer.ai/practice/6255 */
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    static final int N = 5;
+
+    String key;
+    String input;
+    HashMap<Character, Point> charMap;
+    char[][] board;
+    Deque<Character> deque;
+
+    public static void main(String[] args) {
+        new Main().solution();
+    }
+
+    public void solution() {
+        input();
+        solve();
+    }
+
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            input = br.readLine();
+            key = br.readLine();
+            charMap = new HashMap<>();
+            board = new char[N][N];
+            deque = new LinkedList<>();
+
+            for(char c : input.toCharArray()) {
+                deque.addLast(c);
+            }
+
+            int i = 0;
+            for(char c : key.toCharArray()) {
+                if(charMap.containsKey(c)) continue;
+                charMap.put(c, convertToPoint(i++));
+            }
+            for(char c = 'A'; c <= 'Z'; c++) {
+                if(charMap.containsKey(c) || c == 'J') continue;
+                charMap.put(c, convertToPoint(i++));
+            }
+
+            for(char c : charMap.keySet()) {
+                Point point = charMap.get(c);
+                board[point.x][point.y] = c;
+            }
+
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!!!!!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Point convertToPoint(int idx) {
+        return new Point(idx / N, idx % N);
+    }
+
+    public void solve() {
+
+        StringBuilder sb = new StringBuilder();
+        List<String> splitStrList = splitMessageByTwo();
+        for(String str : splitStrList) {
+            sb.append(encode(str));
+        }
+
+        System.out.println(sb);
+    }
+
+    public String encode(String str) {
+        char c1 = str.charAt(0);
+        char c2 = str.charAt(1);
+
+        Point point1 = charMap.get(c1);
+        Point point2 = charMap.get(c2);
+
+        char nC1;
+        char nC2;
+        if(point1.x == point2.x) {
+            // 두 글자가 같은 행에 존재
+            nC1 = board[point1.x][(point1.y + 1) % N];
+            nC2 = board[point2.x][(point2.y + 1) % N];
+        } else if(point1.y == point2.y) {
+            // 두 글자가 같은 열에 존재
+            nC1 = board[(point1.x + 1) % 5][point1.y];
+            nC2 = board[(point2.x + 1) % 5][point2.y];
+        } else {
+            // 두 글자가 서로 다른 행, 열에 존재
+            nC1 = board[point1.x][point2.y];
+            nC2 = board[point2.x][point1.y];
+        }
+
+        return nC1 + "" + nC2;
+
+    }
+
+    public List<String> splitMessageByTwo() {
+        List<String> result = new ArrayList<>();
+
+        while(deque.size() >= 2) {
+            char c1 = deque.pollFirst();
+            char c2 = deque.pollFirst();
+            String splitStr = "";
+            if(c1 == c2) {
+                if(c1 == 'X') {
+                    splitStr = c1 + "Q";
+                    deque.addFirst(c2);
+                } else {
+                    splitStr = c1 + "X";
+                    deque.addFirst(c2);
+                }
+            } else {
+                splitStr = c1 + "" + c2;
+            }
+            result.add(splitStr);
+        }
+
+        if(!deque.isEmpty()) {
+            char c = deque.pollFirst();
+            result.add(c + "X");
+        }
+
+        return result;
+        
+    }
+    
+}
+
+class Point {
+    int x, y;
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+}
