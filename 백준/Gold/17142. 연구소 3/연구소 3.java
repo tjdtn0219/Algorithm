@@ -52,44 +52,18 @@ public class Main{
         }
     }
 
-    public void printVirusPoints() {
-        for(Point point : virusPoints) {
-            System.out.println("point : " + point.x + ", " + point.y);
-        }
-        System.out.println("========================");
-    }
-
     public void solve() {
-        // printVirusPoints();
         makeComb(0, virusPoints.size(), 0);
-        // if(ans == Integer.MAX_VALUE) {
-        //     System.out.println("-1");
-        // } else {
-        //     System.out.println(ans);
-        // }
         if(emptyCnt == 0) {
             System.out.println(0);
         } else {
-            // printComb();
             System.out.println(ans == Integer.MAX_VALUE ? -1 : ans);
         }
     }
 
-    private void printComb() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<M; i++) {
-            sb.append(comb[i]).append(" ");
-        }
-        System.out.println(sb);
-    }
-
     private void makeComb(int k, int len, int lastIdx) {
         if(k == M) {
-            // printComb();
-            // int dis = spreadVirus();
-            // System.out.println("dis : " + dis);
-            // ans = Math.min(ans, dis);
-            spreadVirus2(emptyCnt);
+            spreadVirus(emptyCnt);
             return ;
         }
 
@@ -99,7 +73,7 @@ public class Main{
         }
     }
 
-    private void spreadVirus2(int emptyCnt) {
+    private void spreadVirus(int emptyCnt) {
         Queue<Virus> q = new LinkedList<>();
         boolean[][] infected = new boolean[N][N];
 
@@ -135,91 +109,10 @@ public class Main{
         }
     }
 
-    private int spreadVirus() {
-        int[][] tmpMap = new int[N][N];
-        int[][] disMap = new int[N][N];
-        for(int i=0; i<N; i++) {
-            tmpMap[i] = map[i].clone();
-            Arrays.fill(disMap[i], -1);
-        }
-        Queue<Node> q = new LinkedList<>();
-        for(int i=0; i<M; i++) {
-            Point virusPoint = virusPoints.get(comb[i]);
-            // System.out.println("virusPoint : " + virusPoint.x + ", " + virusPoint.y);
-            q.add(new Node(virusPoint, 0));
-            disMap[virusPoint.x][virusPoint.y] = 0;
-        }
-
-        while(!q.isEmpty()) {
-            int size = q.size();
-            for(int i=0; i<size; i++) {
-                Node cur = q.poll();
-                int x = cur.point.x;
-                int y = cur.point.y;
-                int dis = cur.dis;
-                for(int dir=0; dir<4; dir++) {
-                    int nx = x + DX[dir];
-                    int ny = y + DY[dir];
-                    if(!isInner(nx, ny)) continue;
-                    if(tmpMap[nx][ny] == 1 || disMap[nx][ny] > -1) continue;
-                    if(tmpMap[nx][ny] == 2) {
-                        disMap[nx][ny] = dis;
-                        q.add(new Node(new Point(nx, ny), dis));
-                    } else {
-                        disMap[nx][ny] = dis + 1;
-                        q.add(new Node(new Point(nx, ny), dis + 1));
-                    }
-                }
-            }
-        }
-        // printArr(disMap);
-        return getMinDis(tmpMap, disMap);
-    }
-
-    private int getMinDis(int[][] tmpMap, int[][] disMap) {
-        int max = 0;
-        for(int i=0; i<N; i++) {
-            for(int j=0; j<N; j++) {
-                if(disMap[i][j] == -1 && tmpMap[i][j] == 0) {
-                    return Integer.MAX_VALUE;
-                }
-                if(disMap[i][j] > -1) {
-                    max = Math.max(max, disMap[i][j]);
-                }
-            }
-        }
-        return max;
-    }
-
-    private void printArr(int[][] arr) {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<N; i++) {
-            for(int j=0; j<N; j++) {
-                sb.append(arr[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
-    }
-
-    private boolean isInner(int x, int y) {
-        return 0<=x && 0<=y && x<N && y<N;
-    }
-
-}
-
-class Node {
-    Point point;
-    int dis;
-    public Node(Point point, int dis) {
-        this.point = point;
-        this.dis = dis;
-    }
 }
 
 class Point {
-    int x;
-    int y;
+    int x, y;
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
