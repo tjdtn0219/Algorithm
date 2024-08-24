@@ -1,77 +1,109 @@
-import java.util.*;
- 
-public class Main {    
-    
-    static int n, s, e;
-    static ArrayList<Node> list[];
-    static boolean[] visited;
-    
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        
-        n = scan.nextInt();
-        int m = scan.nextInt();
-        
-        list = new ArrayList[n + 1];
-        for(int i = 0; i < n + 1; i++) {
-            list[i] = new ArrayList<>();
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Main {
+    /**
+     * 백준 1939 중량제한 (https://www.acmicpc.net/problem/1939)
+     */
+    private static int n,m;
+    private static ArrayList<ArrayList<Island>> list = new ArrayList<>();
+    private static boolean[] visit;
+
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(reader.readLine());
+
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+
+        int left = 0;
+        int right = 0;
+
+        for (int i=0; i<=n; i++) {
+            list.add(new ArrayList<>());
         }
-        
+
         int max = 0;
-        int min = Integer.MAX_VALUE;
-        for(int i = 0; i < m; i++) {
-            int x = scan.nextInt();
-            int y = scan.nextInt();
-            int cost = scan.nextInt();    
-            max = Math.max(cost, max);
-            min = Math.min(cost, min);
-            list[x].add(new Node(y, cost));
-            list[y].add(new Node(x, cost));
+
+        for (int i=0; i<m; i++) {
+            st = new StringTokenizer(reader.readLine());
+
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+
+            list.get(a).add(new Island(b,c));
+            list.get(b).add(new Island(a,c));
+
+            max = Math.max(max, c);
         }
-        
-        s = scan.nextInt();
-        e = scan.nextInt();
-        int result = 0;
-        while(min <= max) {
-            int mid = (min + max) / 2;
-            visited = new boolean[n + 1];
-            
-            if(bfs(mid)) { //s ~ e까지 mid의 중량이 건널 수 있는지 확인.
-                min = mid + 1;
-                result = mid;
+
+        right = max;
+
+        st = new StringTokenizer(reader.readLine());
+
+        int start = Integer.parseInt(st.nextToken());
+        int end = Integer.parseInt(st.nextToken());
+
+        while (left <= right) {
+
+            int mid = (left+right)/2;
+            visit = new boolean[n+1];
+
+            if (bfs(start,end,mid)) {
+                left = mid+1;
             } else {
-                max = mid - 1;
+                right = mid-1;
             }
-        }
-        System.out.println(result);
+
+        }//while
+
+        System.out.println(right);
+
+
     }
-    
-    public static boolean bfs(int mid) {
+
+    private static boolean bfs(int start, int end, int mid) {
+
         Queue<Integer> q = new LinkedList<>();
-        q.offer(s);
-        visited[s] = true;
-        
-        while(!q.isEmpty()) {
-            int temp = q.poll();
-            
-            if(temp == e) return true;
-            
-            for(int i = 0; i < list[temp].size(); i++) {
-                if(list[temp].get(i).cost >= mid && visited[list[temp].get(i).n] == false) {
-                    visited[list[temp].get(i).n] = true;
-                    q.offer(list[temp].get(i).n);
-                }
+        q.add(start);
+        visit[start] = true;
+
+        while (!q.isEmpty()) {
+
+            int island = q.poll();
+
+            if (island == end) {
+                return true;
             }
-        }
+
+            for (Island i : list.get(island)) {
+
+                if (!visit[i.destination] && mid <= i.cost) {
+                    visit[i.destination] = true;
+                    q.add(i.destination);
+                }
+
+            }
+
+        }//while
+
         return false;
-    }
-    
-    public static class Node{
-        int n;
-        int cost;
-        
-        public Node(int n, int cost) {
-            this.n = n;
+
+    }//bfs
+
+    static class Island {
+        int destination, cost;
+
+        Island (int destination, int cost) {
+            this.destination = destination;
             this.cost = cost;
         }
     }
