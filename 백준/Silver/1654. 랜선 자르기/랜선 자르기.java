@@ -42,7 +42,6 @@ public class Main {
         while(st <= en) {
             long mid = (st + en) / 2;
             int cnt = getCnt(mid);
-//            System.out.println("cnt : " + cnt + ", mid : " + mid);
             if(cnt >= n) {
                 ans = Math.max(ans, mid);
                 st = mid + 1;
@@ -50,7 +49,6 @@ public class Main {
                 en = mid - 1;
             }
         }
-//        System.out.println("st : " + st);
         System.out.println(ans);
     }
 
