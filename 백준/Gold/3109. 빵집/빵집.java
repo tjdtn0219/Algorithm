@@ -60,37 +60,14 @@ public class Main{
             int ny = y + DY[dir];
             if(!isInner(nx, ny)) continue;
             if(map[nx][ny] != '.') continue;
-            if(dfs(nx, ny)) return true;
+            boolean flag = dfs(nx, ny);
+            if(flag) return true;
         }
         return false;
-
-		// if(y == m-1) //마지막 열(원웅이 빵집)에 도착했으면
-		// 	return true;
-		
-		// if(x > 0 && map[x-1][y+1] == '.') //오른쪽 위
-		// 	if(dfs(x-1, y+1))
-		// 		return true;
-		// if(map[x][y+1] == '.') //오른쪽
-		// 	if(dfs(x, y+1))
-		// 		return true;
-		// if(x+1 < n && map[x+1][y+1] == '.') //오른쪽 아래
-		// 	if(dfs(x+1, y+1))
-		// 		return true;
-		// return false;
 	}
 
     private boolean isInner(int x, int y) {
         return 0<=x && 0<=y && x<n && y<m;
     }
 
-}
-
-class Point {
-    int x;
-    int y;
-
-    public Point(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
 }
