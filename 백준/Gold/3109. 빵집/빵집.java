@@ -42,61 +42,42 @@ public class Main{
 
     public void solve() {
         for(int i=0; i<n; i++) {
-            // if(dfs(i, 0)) ans++;
-            // dfs(i, 0);
-            if(check(i, 0)) ans++;
+            if(dfs(i, 0)) ans++;
         }
         System.out.println(ans);
 
     }
 
-    public boolean check(int x, int y) {
-		map[x][y] = '-';
-		
-		if(y == m-1) //마지막 열(원웅이 빵집)에 도착했으면
-			return true;
-		
-		if(x > 0 && map[x-1][y+1] == '.') //오른쪽 위
-			if(check(x-1, y+1))
-				return true;
-		if(map[x][y+1] == '.') //오른쪽
-			if(check(x, y+1))
-				return true;
-		if(x+1 < n && map[x+1][y+1] == '.') //오른쪽 아래
-			if(check(x+1, y+1))
-				return true;
-		return false;
-	}
-
     public boolean dfs(int x, int y) {
+		map[x][y] = '-';
 
-        // if(y == m-1) {
-        //     return true;
-        // }
-
+        if(y == m-1) {
+            return true;
+        }
+		
         for(int dir=0; dir<3; dir++) {
             int nx = x + DX[dir];
             int ny = y + DY[dir];
             if(!isInner(nx, ny)) continue;
             if(map[nx][ny] != '.') continue;
-            if(ny == m-1) {
-                ans++;
-                return true;
-            }
-            
-            map[ny][nx] = '-';
-             if(dfs(nx,ny)) return true;
-            // if(map[nx][ny] == 'x' || isPiped[nx][ny]) continue;
-            // isPiped[nx][ny] = true;
-            // boolean flag = dfs(nx, ny);
-            // if(flag) return true;
-            // else {
-            //     isPiped[nx][ny] = false;
-            //     return false;
-            // }
+            if(dfs(nx, ny)) return true;
         }
         return false;
-    }
+
+		// if(y == m-1) //마지막 열(원웅이 빵집)에 도착했으면
+		// 	return true;
+		
+		// if(x > 0 && map[x-1][y+1] == '.') //오른쪽 위
+		// 	if(dfs(x-1, y+1))
+		// 		return true;
+		// if(map[x][y+1] == '.') //오른쪽
+		// 	if(dfs(x, y+1))
+		// 		return true;
+		// if(x+1 < n && map[x+1][y+1] == '.') //오른쪽 아래
+		// 	if(dfs(x+1, y+1))
+		// 		return true;
+		// return false;
+	}
 
     private boolean isInner(int x, int y) {
         return 0<=x && 0<=y && x<n && y<m;
