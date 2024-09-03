@@ -54,9 +54,6 @@ public class Main {
 
     public void solve() {
         fillParentArr();
-//        for(int i=1; i<=n; i++) {
-//            System.out.println("parent[" + i + "] : " + parent[i]);
-//        }
         fillIsKnowTrue();
         findFalseParty();
     }
@@ -79,6 +76,15 @@ public class Main {
         }
     }
 
+    public void findFalseParty() {
+        for(List<Integer> party : parties) {
+            int root = find(party.get(0));
+            if(!isKnowTrue[root]) {
+                answer++;
+            }
+        }
+    }
+
     public int find(int x) {
         if(parent[x] == x) return x;
         else return parent[x] = find(parent[x]);
@@ -91,15 +97,6 @@ public class Main {
             parent[v] = u;
         } else {
             parent[u] = v;
-        }
-    }
-
-    public void findFalseParty() {
-        for(List<Integer> party : parties) {
-            int root = find(party.get(0));
-            if(!isKnowTrue[root]) {
-                answer++;
-            }
         }
     }
 
