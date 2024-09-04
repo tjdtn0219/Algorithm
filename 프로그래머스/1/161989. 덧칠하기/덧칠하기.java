@@ -1,7 +1,9 @@
 import java.util.*;
 
 class Solution {
+    
     public int solution(int n, int m, int[] section) {
+        
         int ans = 0;
         
         boolean[] isPaint = new boolean[n+1];
