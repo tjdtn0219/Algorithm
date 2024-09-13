@@ -1,30 +1,16 @@
-import java.util.*;
-
 class Solution {
     
     public int solution(int n, int m, int[] section) {
+        int answer = 0;
         
-        int ans = 0;
+        int cur = 0;
         
-        boolean[] isPaint = new boolean[n+1];
-        Arrays.fill(isPaint, true);
-        
-        for(int num : section) {
-            isPaint[num] = false;
+        for(int idx : section) {
+            if(cur >= idx) continue;
+            cur = idx + m - 1;
+            answer++;
         }
         
-        for(int num : section) {
-            if(isPaint[num]) continue;
-            boolean flag = false;
-            for(int i=num; i<Math.min(num+m,n+1); i++) {
-                if(!isPaint[i]) {
-                    isPaint[i] = true;
-                    flag = true;
-                }
-            }
-            if(flag) ans++;
-        }
-        
-        return ans;
+        return answer;
     }
 }
