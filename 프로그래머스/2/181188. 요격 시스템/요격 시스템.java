@@ -16,17 +16,22 @@ class Solution {
         });
         this.targets = targets;
     }
-    
+        
     public int solve() {
-        int preE = -1;
+        int preE = 0;
         int cnt = 0;
         
         for(int[] tg : targets) {
-            if(preE <= tg[0]) {
+            int s = tg[0];
+            int e = tg[1];
+            if(preE <= s) {
                 cnt++;
-                preE = tg[1];
+                preE = e;
             }
         }
+        
         return cnt;
+
     }
+        
 }
