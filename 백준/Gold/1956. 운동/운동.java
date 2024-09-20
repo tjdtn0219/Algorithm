@@ -45,23 +45,10 @@ public class Main {
         }
     }
 
-    private void printDis() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=1; i<=v; i++) {
-            for(int j=1; j<=v; j++) {
-                sb.append(dis[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
-    }
-
     public void solve() {
         for(int i=1; i<=v; i++) {
             setMinDis(i);
         }
-
-        // printDis();
 
         int ans = INF;
         for(int i=1; i<=v; i++) {
