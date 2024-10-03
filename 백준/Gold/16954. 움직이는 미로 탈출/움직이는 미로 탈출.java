@@ -25,17 +25,16 @@ class Node{
 
 public class Main {
 	
-    static char[][] map = new char[8][8];
-    static List<Node> walls = new ArrayList<>();
+    char[][] map = new char[8][8];
     static int[] dx = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
     static int[] dy = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
     
     
-    public static boolean isValid(int x, int y) {
+    public boolean isValid(int x, int y) {
     	return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
     
-    public static void moveWall() {
+    public void moveWall() {
     	for(int i=6;i>=0;i--){
             for(int j=0;j<8;j++){
                 map[i+1][j] = map[i][j];
@@ -48,7 +47,7 @@ public class Main {
         }
     }
     
-    public static int bfs(int x, int y) {
+    public int bfs(int x, int y) {
     	Queue<Node> q = new LinkedList<>();
     	q.offer(new Node(x, y));
     	
@@ -83,19 +82,34 @@ public class Main {
     }
     
 
-	public static void main(String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
-		for(int i = 0; i < 8; i++) {
-			String input = br.readLine();
-			for(int j = 0; j < 8; j++) {
-				map[i][j] = input.charAt(j);
+	public static void main(String[] args) {
+        new Main().solution();
+    }
 
-			}
-		}
-		
-		System.out.println(bfs(7, 0));
-		
-	}
+    public void solution() {
+        input();
+        solve();
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            map = new char[8][8];
+            for(int i=0; i<8; i++) {
+                String s = br.readLine();
+                for(int j=0; j<8; j++) {
+                    map[i][j] = s.charAt(j);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void solve() {
+        System.out.println(bfs(7, 0));
+    }
+
 
 }
