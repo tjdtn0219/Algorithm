@@ -3,8 +3,8 @@ import java.util.*;;
 
 public class Main {
 	
-    static final int[] dx = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
-    static final int[] dy = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
+    static final int[] DX = {-1, -1, -1, 0, 1, 1, 1, 0, 0};
+    static final int[] DY = {-1, 0, 1, 1, 1, 0, -1, -1, 0};
     static final int N = 8;
     
     char[][] map = new char[8][8];
@@ -66,8 +66,8 @@ public class Main {
                 if(cur.x == 0 && cur.y == N-1) return 1;
                 if(isHitByWall(cur.x, cur.y)) continue;
                 for(int dir=0; dir<9; dir++) {
-                    int nx = cur.x + dx[dir];
-                    int ny = cur.y + dy[dir];
+                    int nx = cur.x + DX[dir];
+                    int ny = cur.y + DY[dir];
                     if(!isInner(nx, ny)) continue;
                     if(map[nx][ny] == '#') continue;
                     q.add(new Point(nx, ny));
@@ -80,40 +80,6 @@ public class Main {
 
     public boolean isHitByWall(int x, int y) {
         return map[x][y] == '#';
-    }
-    
-    public int bfs(int x, int y) {
-    	Queue<Point> q = new LinkedList<>();
-    	q.offer(new Point(x, y));
-    	
-    	while(!q.isEmpty()) {
-    		
-    		int size = q.size();
-    		
-    		for(int s = 0; s < size; s++) {
-    			Point tmp = q.poll();
-        		x = tmp.x;
-        		y = tmp.y;
-    			
-    			if(map[x][y] == '#') continue;
-    			if(x == 0 && y == 7) return 1;
-        		
-        		for(int i = 0; i < 9; i++) {
-        			int newX = x + dx[i];
-        			int newY = y + dy[i];
-
-    		    	if(isInner(newX, newY)) {
-    		    		if(map[newX][newY] == '.')
-    		    			q.offer(new Point(newX, newY));
-    		    	}
-    		    	
-        		}
-    		}
-    		moveWall();
-    	}
-
-    	return 0;
-    	
     }
     
 }
