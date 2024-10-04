@@ -1,2 +1,2 @@
 # My_BackJoon
-This is my solutions for Backjoon, Programmers, Softeer.
+This is my solutions for Backjoon Judge, Programmers, Softeer.
