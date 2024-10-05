@@ -2,12 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-
+	
     static final int MAX = 200_000;
 
     int n;
-    LinkedList<Problem> problems;
-    PriorityQueue<Problem> pq;
+    LinkedList<Node> list;
 
     public static void main(String[] args) {
         new Main().solution();
@@ -16,20 +15,20 @@ public class Main {
     public void solution() {
         input();
         solve();
-        
     }
 
     public void input() {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            list = new LinkedList<>();
             n = Integer.parseInt(br.readLine());
-            problems = new LinkedList<>();
             for(int i=0; i<n; i++) {
-                String[] a_b = br.readLine().split(" ");
-                int a = Integer.parseInt(a_b[0]);
-                int b = Integer.parseInt(a_b[1]);
-                problems.add(new Problem(a, b));
+                String[] d_c = br.readLine().split(" ");
+                int deadLine = Integer.parseInt(d_c[0]);
+                int cups = Integer.parseInt(d_c[1]);
+                list.add(new Node(deadLine, cups));
             }
+
         } catch (Exception e) {
             System.out.println("INPUT ERROR!!");
             throw new RuntimeException(e);
@@ -37,43 +36,41 @@ public class Main {
     }
 
     public void solve() {
-        Collections.sort(problems, (o1, o2) -> {
-            if(o1.deadLine == o2.deadLine) {
-                return o2.ramen - o1.ramen;
-            }
+        PriorityQueue<Node> pq = new PriorityQueue<>((o1, o2) -> {
+            // if(o1.cups == o2.cups) {
+            //     return o2.deadLine - o1.deadLine;
+            // }
+            return o2.cups - o1.cups;
+        });
+
+        Collections.sort(list, (o1, o2) -> {
+            // if(o1.deadLine == o2.deadLine) {
+            //     return o2.cups - o1.cups;
+            // }
             return o2.deadLine - o1.deadLine;
         });
 
-        pq = new PriorityQueue<>((o1, o2) -> {
-            if(o1.ramen == o2.ramen) {
-                return o2.deadLine - o1.deadLine;
+        long ans = 0;
+        for(int days=MAX; days>=1; days--) {
+            while(!list.isEmpty() && list.getFirst().deadLine == days) {
+                pq.add(list.poll());
             }
-            return o2.ramen - o1.ramen;
-        });
 
-        int ans = 0;
-
-        for(int time = MAX; time>=1; time--) {
-            // System.out.println("curTime : " + time + " ,problem.deadLine : " + problems.getFirst().deadLine);
-            while(!problems.isEmpty() && problems.peek().deadLine == time) {
-                pq.add(problems.pollFirst());
-            }
             if(!pq.isEmpty()) {
-                ans += pq.poll().ramen;
+                ans += pq.poll().cups;
             }
-            // System.out.println("ans : " + ans);
         }
-        
         System.out.println(ans);
+
     }
+ 
 }
 
-class Problem {
+class Node {
     int deadLine;
-    int ramen;
-
-    public Problem(int deadLine, int ramen) {
+    int cups;
+    public Node(int deadLine, int cups) {
         this.deadLine = deadLine;
-        this.ramen = ramen;
+        this.cups = cups;
     }
 }
