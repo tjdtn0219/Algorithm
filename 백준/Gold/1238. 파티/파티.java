@@ -1,101 +1,94 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
- 
-class Town implements Comparable<Town> {
-    int end;
-    int weight;
- 
-    Town(int end, int weight) {
-        this.end = end;
-        this.weight = weight;
-    }
- 
-    @Override
-    public int compareTo(Town arg0) {
-        return weight - arg0.weight;
-    }
-}
- 
+import java.io.*;
+import java.util.*;
+
 public class Main {
-    static final int INF = 987654321;
-    static ArrayList<ArrayList<Town>> arrList, reverse_arrList;
-    static int N, X;
- 
-    public static void main(String[] args) throws NumberFormatException, IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringTokenizer st = new StringTokenizer(br.readLine());
- 
-        N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        X = Integer.parseInt(st.nextToken());
- 
-        arrList = new ArrayList<>(); // 문제의 입력을 그대로 받은 배열
-        reverse_arrList = new ArrayList<>(); // 문제의 입력을 반대로 받은 배열
- 
-        for (int i = 0; i <= N; i++) {
-            arrList.add(new ArrayList<>());
-            reverse_arrList.add(new ArrayList<>());
-        }
- 
-        // arrList와 reverse_arrList를 각각 단방향 인접리스트로 구현
-        for (int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine());
-            int start = Integer.parseInt(st.nextToken());
-            int end = Integer.parseInt(st.nextToken());
-            int weight = Integer.parseInt(st.nextToken());
- 
-            arrList.get(start).add(new Town(end, weight));
-            reverse_arrList.get(end).add(new Town(start, weight));
-        }
- 
-        int[] dist1 = dijkstra(arrList); // X에서 시작점들 사이의 최단거리
-        int[] dist2 = dijkstra(reverse_arrList); // 시작점들에서 X 사이의 최단거리
- 
-        int ans = 0;
-        for (int i = 1; i <= N; i++) {
-            ans = Math.max(ans, dist1[i] + dist2[i]);
-        }
- 
-        bw.write(ans + "\n");
-        bw.flush();
-        bw.close();
-        br.close();
+	
+    int n, m, x;
+    List<List<Edge>> graph;
+    List<List<Edge>> reverseGraph;
+
+    public static void main(String[] args) {
+        new Main().solution();
     }
-    
-    // 다익스트라 알고리즘
-    public static int[] dijkstra(ArrayList<ArrayList<Town>> a) {
-        PriorityQueue<Town> pq = new PriorityQueue<>();
-        pq.offer(new Town(X, 0));
+
+    public void solution() {
+        input();
+        solve();
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] n_m_k = br.readLine().split(" ");
+            n = Integer.parseInt(n_m_k[0]);
+            m = Integer.parseInt(n_m_k[1]);
+            x = Integer.parseInt(n_m_k[2]);
+            graph = new ArrayList<>();
+            reverseGraph = new ArrayList<>();
+            for(int i=0; i<=n; i++) {
+                graph.add(new ArrayList<>());
+                reverseGraph.add(new ArrayList<>());
+            }
+            for(int i=0; i<m; i++) {
+                String[] a_b_c = br.readLine().split(" ");
+                int a = Integer.parseInt(a_b_c[0]);
+                int b = Integer.parseInt(a_b_c[1]);
+                int c = Integer.parseInt(a_b_c[2]);
+                graph.get(a).add(new Edge(b, c));
+                reverseGraph.get(b).add(new Edge(a, c));
+            }
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void solve() {
+        int[] dis1 = dijkstra(graph);
+        int[] dis2 = dijkstra(reverseGraph);
+
+        int ans = 0;
+        for(int i=1; i<=n; i++) {
+            ans = Math.max(ans, dis1[i] + dis2[i]);
+        }
+
+        System.out.println(ans);
+
+    }
+
+    public int[] dijkstra(List<List<Edge>> graph1) {
+        PriorityQueue<Edge> pq = new PriorityQueue<>((o1, o2) -> o1.cost - o2.cost);
+        pq.offer(new Edge(x, 0));
         
-        boolean[] check = new boolean[N + 1];
-        int[] dist = new int[N + 1];
-        Arrays.fill(dist, INF);
-        dist[X] = 0;
+        boolean[] check = new boolean[n + 1];
+        int[] dis = new int[n + 1];
+        Arrays.fill(dis, Integer.MAX_VALUE);
+        dis[x] = 0;
  
         while (!pq.isEmpty()) {
-            Town curTown = pq.poll();
-            int cur = curTown.end;
+            Edge curEdge = pq.poll();
+            int cur = curEdge.node;
+            
+            if(curEdge.cost > dis[cur]) continue;
  
-            if (!check[cur]) {
-                check[cur] = true;
- 
-                for (Town town : a.get(cur)) {
-                    if (!check[town.end] && dist[town.end] > dist[cur] + town.weight) {
-                        dist[town.end] = dist[cur] + town.weight;
-                        pq.add(new Town(town.end, dist[town.end]));
-                    }
+            for (Edge nxt : graph1.get(cur)) {
+                if (dis[nxt.node] > dis[cur] + nxt.cost) {
+                    dis[nxt.node] = dis[cur] + nxt.cost;
+                    pq.add(new Edge(nxt.node, dis[nxt.node]));
                 }
             }
         }
-        return dist;
+        return dis;
     }
  
+}
+
+
+class Edge {
+    int node;
+    int cost;
+    public Edge(int node, int cost) {
+        this.node = node;
+        this.cost = cost;
+    }
 }
