@@ -1,79 +1,86 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
 
 public class Main {
 
-	static int n,m;
-	static int hole = -99;
-	static int max=-1;
-	static boolean flag= false;
-	static int[][] map,dp;
-	static boolean[][] visited;
-	static int[] dx = {1,-1,0,0};
-	static int[] dy = {0,0, 1,-1};
+    static final int[] DX = {-1, 0, 1, 0};
+    static final int[] DY = {0, 1, 0, -1};
 	
-	public static void main(String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		n = Integer.parseInt(st.nextToken());
-		m = Integer.parseInt(st.nextToken());
-		
-		map = new int[n][m];
-		dp =  new int[n][m];
-		visited = new boolean[n][m];
-		
-		for(int i=0; i<n; i++) {
-			String[] line = br.readLine().split("");
-			for(int j=0; j<line.length; j++) {
-				if(line[j].equals("H")) {
-					map[i][j] = hole;
-				}else {
-					int num = Integer.parseInt(line[j]);
-					map[i][j] = num;
-				}
-			}
-		}
+    int n, m;
+    int[][] board;
+    boolean[][] vis;
+    int[][] dp;
+    boolean isCycle;
+    int max;
 
-		visited[0][0] = true;
-		dfs(0,0,1);
-		
-		if(flag) {
-			System.out.println(-1);
-		}else {
-			System.out.println(max);
-		}
-	}
-	
-	static void dfs(int x, int y, int cnt) {
-		if(cnt>max) {
-			max = cnt;
-		}
-		dp[x][y] = cnt;
-		
-		for(int i=0; i<4; i++) {
-			int move = map[x][y];
-			int nx = x+ (move*dx[i]);
-			int ny = y+ (move*dy[i]);
-			
-			if(nx<0 || ny<0 || nx>n-1 || ny>m-1 || map[nx][ny] == hole) {
-				continue;
-			}
-			
-			// 이미 방문한 곳을 다시 한번 방문하면 무한루프로 리턴 
-			if(visited[nx][ny]) {
-				flag = true;
-				return;
-			}
-			
-			// 이미 깊이 탐색한 부분 스킵
-			if(dp[nx][ny] > cnt) continue;
-			
-			visited[nx][ny]= true;
-			dfs(nx, ny, cnt+1);	
-			visited[nx][ny]= false;
-		}
-		
-	}
+    public static void main(String[] args) {
+        new Main().solution();
+    }
+
+    public void solution() {
+        input();
+        solve();
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] n_m = br.readLine().split(" ");
+            n = Integer.parseInt(n_m[0]);
+            m = Integer.parseInt(n_m[1]);
+            board = new int[n][m];
+            vis = new boolean[n][m];
+            dp = new int[n][m];
+            isCycle = false;
+            max = 0;
+            for(int i=0; i<n; i++) {
+                String s = br.readLine();
+                for(int j=0; j<m; j++) {
+                    if(s.charAt(j) == 'H') board[i][j] = -1;
+                    else board[i][j] = s.charAt(j) - '0';
+                }
+            }
+            
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void solve() {
+        vis[0][0] = true;
+        dfs(0, 0, 1);
+        if(isCycle) {
+            System.out.println(-1);
+        } else {
+            System.out.println(max);
+        }
+    }
+
+    public void dfs(int x, int y, int k) {
+        if(k > max) {
+            max = k;
+        }
+        dp[x][y] = k;
+
+        for(int dir=0; dir<4; dir++) {
+            int nx = x + DX[dir]*board[x][y];
+            int ny = y + DY[dir]*board[x][y];
+            if(!isInner(nx, ny)) continue;
+            if(board[nx][ny] == -1) continue;
+            if(vis[nx][ny]) {
+                isCycle = true;
+                return ;
+            }
+            if(k < dp[nx][ny]) continue;
+
+            vis[nx][ny] = true;
+            dfs(nx, ny, k+1);
+            vis[nx][ny] = false;
+        }
+    }
+
+    public boolean isInner(int x, int y) {
+        return 0<=x && 0<=y && x<n && y<m;
+    }
+
 }
