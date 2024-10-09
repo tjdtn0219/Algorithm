@@ -2,109 +2,120 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static class Node implements Comparable<Node>{
-        int end, weight;
 
-        public Node(int end, int weight) {
-            this.end = end;
-            this.weight = weight;
-        }
+    static final int INF = 100_000_000;
 
-        @Override
-        public int compareTo(Node o) {
-            return weight - o.weight;
-        }
+    int T;
+    int n, m, k;
+    int s, g, h;
+    List<List<Edge>> graph;
+    List<Integer> destList;
+
+    public static void main(String[] args) {
+        new Main().solution();
     }
-    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    private static final int INF = 10_000_000;
-    static int vertex, edge, t;
-    static int start, g, h;
-    static int arr[][];
-    static int dist[];
-    static boolean check[];
-    static List<Integer> answerList;
 
+    public void solution() {
+        input();
+        // solve();
+    }
 
-    public static void main(String[] args) throws IOException {
-        int testCnt = Integer.parseInt(br.readLine());
-
-        for(int i = 0 ; i < testCnt; i++){
-            // n,m,t 초기화
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            vertex = Integer.parseInt(st.nextToken());
-            edge = Integer.parseInt(st.nextToken());
-            t = Integer.parseInt(st.nextToken());
-
-            // 그래프 배열 선언
-            arr = new int[vertex + 1][vertex + 1];
-            dist = new int[vertex + 1];
-            for(int j = 0 ; j < arr.length; j++)
-                Arrays.fill(arr[j], INF);
-            Arrays.fill(dist, INF);
-            check = new boolean[vertex + 1];
-
-            // s, g, h 초기화
-            st = new StringTokenizer(br.readLine());
-            start = Integer.parseInt(st.nextToken());
-            g = Integer.parseInt(st.nextToken());
-            h = Integer.parseInt(st.nextToken());
-
-            // 그래프 정보 저장
-            for(int j = 0 ; j < edge; j++){
-                st = new StringTokenizer(br.readLine());
-                int vertex1 = Integer.parseInt(st.nextToken());
-                int vertex2 = Integer.parseInt(st.nextToken());
-                int distance = Integer.parseInt(st.nextToken());
-                // 2배의 가중치를 저장
-                arr[vertex1][vertex2] = arr[vertex2][vertex1] = distance * 2;
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            T = Integer.parseInt(br.readLine());
+            for(int t=0; t<T; t++) {
+                String[] n_m_k = br.readLine().split(" ");
+                n = Integer.parseInt(n_m_k[0]);
+                m = Integer.parseInt(n_m_k[1]);
+                k = Integer.parseInt(n_m_k[2]);
+                String[] s_g_h = br.readLine().split(" ");
+                s = Integer.parseInt(s_g_h[0]);
+                g = Integer.parseInt(s_g_h[1]);
+                h = Integer.parseInt(s_g_h[2]);
+                graph = new ArrayList<>();
+                for(int i=0; i<=n; i++) graph.add(new ArrayList<>());
+                for(int i=0; i<m; i++) {
+                    String[] a_b_c = br.readLine().split(" ");
+                    int a = Integer.parseInt(a_b_c[0]);
+                    int b = Integer.parseInt(a_b_c[1]);
+                    int c;
+                    if((a==g && b==h) || (a==h && b==g)) {
+                        c = Integer.parseInt(a_b_c[2]) * 2 - 1;
+                    } else {
+                        c = Integer.parseInt(a_b_c[2]) * 2;
+                    }
+                    graph.get(a).add(new Edge(b, c));
+                    graph.get(b).add(new Edge(a, c));
+                }
+                destList = new ArrayList<>();
+                for(int i=0; i<k; i++) {
+                    int x = Integer.parseInt(br.readLine());
+                    destList.add(x);
+                }
+                solve();
             }
-            // 2배된 값에 -1을 하여 홀수를 만든다.
-            arr[h][g] = arr[g][h] = arr[h][g] - 1;
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
+        }
+    }
 
-            // 후보정답 list선언
-            answerList = new ArrayList<>();
-            // 후보가 되는 값 추가
-            for(int j = 0; j < t; j++)
-                answerList.add(Integer.parseInt(br.readLine()));
-
-            solve();
-            // 오름차순 정렬
-            Collections.sort(answerList);
-            // 정답 출력
-            for(int num : answerList)
-                if(dist[num] % 2 == 1) bw.write(num + " ");
-            bw.write("\n");
+    public void solve() {
+        int[] dist = dijkstra();
+        List<Integer> ansList = new ArrayList<>();
+        for(int dest : destList) {
+            if(dist[dest] % 2 == 0) continue;
+            ansList.add(dest);
         }
 
-        bw.close();
-        br.close();
+        Collections.sort(ansList);
+        StringBuilder sb = new StringBuilder();
+        for(int num : ansList) {
+            sb.append(num).append(" ");
+        }
+        System.out.println(sb);
+
     }
 
-    private static void solve() {
-        dijkstra();
-    }
+    public int[] dijkstra(){
+        boolean[] check = new boolean[n+1];
+        int[] dist = new int[n+1];
+        Arrays.fill(dist, INF);
+        PriorityQueue<Edge> pq = new PriorityQueue<>((o1, o2) -> o1.c - o2.c);
+        pq.add(new Edge(s, 0));
+        dist[s] = 0;
 
-    private static void dijkstra(){
-        PriorityQueue<Node> queue = new PriorityQueue<>();
-        queue.add(new Node(start, 0));
-        dist[start] = 0;
+        while(!pq.isEmpty()){
+            Edge cur = pq.poll();
+            // if(cur.c > dist[cur.b]) continue;
 
-        // 큐가 빌 때까지
-        while(!queue.isEmpty()){
-            Node curNode = queue.poll();
-            int cur = curNode.end;
-            // 이미 방문한 노드인 경우 패스
-            if(check[cur]) continue;
-            // 방문 처리
-            check[cur] = true;
+            if(check[cur.b]) continue;
+            check[cur.b] = true;
 
-            for(int i = 1; i <= vertex; i++){
-                if(check[i] == false && dist[i] > dist[cur] + arr[cur][i]){
-                    dist[i] = dist[cur] + arr[cur][i];
-                    queue.add(new Node(i, dist[i]));
+            for(Edge nxt : graph.get(cur.b)){
+                if(!check[nxt.b] && dist[nxt.b] > dist[cur.b] + nxt.c){
+                    dist[nxt.b] = dist[cur.b] + nxt.c;
+                    pq.add(new Edge(nxt.b, dist[nxt.b]));
                 }
             }
+            // for(Edge nxt : graph.get(cur.b)) {
+            //     if(dist[nxt.b] > cur.c + nxt.c) {
+            //         dist[nxt.b] = cur.c + nxt.c;
+            //         pq.add(new Edge(nxt.b, dist[nxt.b]));
+            //     }
+            // }
         }
+
+        return dist;
     }
+}
+
+class Edge {
+    int b, c;
+    public Edge(int b, int c) {
+        this.b = b;
+        this.c = c;
+    }
+
 }
