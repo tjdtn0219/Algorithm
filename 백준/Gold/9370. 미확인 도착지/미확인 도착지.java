@@ -79,7 +79,6 @@ public class Main {
     }
 
     public int[] dijkstra(){
-        boolean[] check = new boolean[n+1];
         int[] dist = new int[n+1];
         Arrays.fill(dist, INF);
         PriorityQueue<Edge> pq = new PriorityQueue<>((o1, o2) -> o1.c - o2.c);
@@ -88,23 +87,14 @@ public class Main {
 
         while(!pq.isEmpty()){
             Edge cur = pq.poll();
-            // if(cur.c > dist[cur.b]) continue;
+            if(cur.c > dist[cur.b]) continue;
 
-            if(check[cur.b]) continue;
-            check[cur.b] = true;
-
-            for(Edge nxt : graph.get(cur.b)){
-                if(!check[nxt.b] && dist[nxt.b] > dist[cur.b] + nxt.c){
-                    dist[nxt.b] = dist[cur.b] + nxt.c;
+            for(Edge nxt : graph.get(cur.b)) {
+                if(dist[nxt.b] > cur.c + nxt.c) {
+                    dist[nxt.b] = cur.c + nxt.c;
                     pq.add(new Edge(nxt.b, dist[nxt.b]));
                 }
             }
-            // for(Edge nxt : graph.get(cur.b)) {
-            //     if(dist[nxt.b] > cur.c + nxt.c) {
-            //         dist[nxt.b] = cur.c + nxt.c;
-            //         pq.add(new Edge(nxt.b, dist[nxt.b]));
-            //     }
-            // }
         }
 
         return dist;
