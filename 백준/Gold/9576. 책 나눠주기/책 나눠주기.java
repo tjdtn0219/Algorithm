@@ -61,16 +61,14 @@ public class Main {
         // printArr();
 
 
-        boolean[] isRent = new boolean[n+1];
         int cnt = 0;
         for(int[] ab : arr) {
             int a = ab[0];
             int b = ab[1];
-            for(int i=a; i<=b; i++) {
-                if(isRent[i]) continue;
-                isRent[i] = true;
+            int avail = find(a);
+            if(avail <= b) {
                 cnt++;
-                break;
+                union(avail, avail+1);
             }
             
         }
