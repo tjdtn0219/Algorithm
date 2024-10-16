@@ -3,10 +3,12 @@ import java.util.*;
 
 public class Main {
 
+    static final int MAX = 1_005;
+
     int T;
-    int[] nArr;
-    int[] mArr;
-    HashMap<Integer, List<Node>> abMap;
+    int n, m;
+    int[][] arr;
+    int[] parents;
 
     public static void main(String[] args) {
         new Main().solution();
@@ -14,79 +16,86 @@ public class Main {
 
     public void solution() {
         input();
-        solve();
+        // solve();
     }
-
 
     public void input() {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             T = Integer.parseInt(br.readLine());
-            nArr = new int[T];
-            mArr = new int[T];
-            abMap = new HashMap<>();
-            for(int t=0; t<T; t++) {
-                String[] N_M = br.readLine().split(" ");
-                int N = Integer.parseInt(N_M[0]);
-                int M = Integer.parseInt(N_M[1]);
-                nArr[t] = N;
-                mArr[t] = M;
-                List<Node> list = new ArrayList<>();
-                for(int i=0; i<M; i++) {
-                    String[] A_B = br.readLine().split(" ");
-                    int a = Integer.parseInt(A_B[0]);
-                    int b = Integer.parseInt(A_B[1]);
-                    list.add(new Node(a, b));
+            for(int t=0; t<T; t++ ){
+                String[] n_m = br.readLine().split(" ");
+                n = Integer.parseInt(n_m[0]);
+                m = Integer.parseInt(n_m[1]);
+                arr = new int[m][2];
+                parents = new int[MAX];
+                for(int i=0; i<MAX; i++) {
+                    parents[i] = i;
                 }
-                abMap.put(t, list);
+                for(int i=0; i<m; i++) {
+                    String[] a_b = br.readLine().split(" ");
+                    int a = Integer.parseInt(a_b[0]);
+                    int b = Integer.parseInt(a_b[1]);
+                    arr[i][0] = a;
+                    arr[i][1] = b;
+                }
+                solve();
+
             }
+            
         } catch (Exception e) {
-            System.out.println("INPUT ERROR!!!!!!");
+            System.out.println("INPUT ERROR!!");
             throw new RuntimeException(e);
         }
     }
 
-
     public void solve() {
-        for(int t=0; t<T; t++) {
-            int N = nArr[t];
-            int M = mArr[t];
-            List<Node> abList = abMap.get(t);
-            boolean[] isRent = new boolean[N+1];
 
-            Collections.sort(abList, (o1, o2) -> {
-                if(o1.b == o2.b) {
-                    return o1.a - o2.a;
-                }
-                return o1.b - o2.b;
-            });
-
-            int ans = 0;
-            for(Node node : abList) {
-                int a = node.a;
-                int b = node.b;
-                for(int i=a; i<=b; i++) {
-                    if(isRent[i]) continue;
-                    isRent[i] = true;
-                    ans++;
-                    break;
-                }
+        Arrays.sort(arr, (o1, o2) -> {
+            if(o1[1] == o2[1]) {
+                return o1[0] - o2[0];
             }
+            return o1[1] - o2[1];
+        });
 
-            System.out.println(ans);
+        // printArr();
+
+
+        boolean[] isRent = new boolean[n+1];
+        int cnt = 0;
+        for(int[] ab : arr) {
+            int a = ab[0];
+            int b = ab[1];
+            for(int i=a; i<=b; i++) {
+                if(isRent[i]) continue;
+                isRent[i] = true;
+                cnt++;
+                break;
+            }
             
+        }
+        System.out.println(cnt);
+    }
+
+    private void printArr() {
+        for(int[] tmp : arr) {
+            System.out.println("a , b : " + tmp[0] + ", " + tmp[1]);
         }
     }
 
-}
+    public int find(int x) {
+        if(parents[x] == x) return x;
+        return parents[x] = find(parents[x]);
+    }
 
-class Node {
-    int a;
-    int b;
-    public Node(int a, int b) {
-        this.a = a;
-        this.b = b;
+    public void union(int u, int v) {
+        u = find(u);
+        v = find(v);
+
+        if(u < v) {
+            parents[u] = v;
+        } else {
+            parents[v] = u;
+        }
     }
 }
-
-
