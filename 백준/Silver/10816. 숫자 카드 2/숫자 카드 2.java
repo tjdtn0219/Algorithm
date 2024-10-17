@@ -1,73 +1,83 @@
 import java.io.*;
 import java.util.*;
 
-class Main {
+public class Main {
 
-    public static void main(String[] args) throws IOException {
+    static final int MAX = Integer.MAX_VALUE;
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    int n;
+    int[] arr1;
+    int m;
+    int[] arr2;
+
+    public static void main(String[] args) {
+        new Main().solution();
+    }
+
+    public void solution() {
+        input();
+        solve();
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            n = Integer.parseInt(br.readLine());
+            arr1 = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            Arrays.sort(arr1);
+            // printArr(arr1);
+            m = Integer.parseInt(br.readLine());
+            arr2 = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void solve() {
         StringBuilder sb = new StringBuilder();
-
-        int n = Integer.parseInt(br.readLine());
-        String[] strings = br.readLine().split(" ");
-
-        int[] a1 = new int[n];
-        for(int i=0; i<n; i++) {
-            a1[i] = Integer.parseInt(strings[i]);
+        for(int num : arr2) {
+            sb.append(getUpperIdx(num) - getLowerIdx(num)).append(" ");
         }
-        Arrays.sort(a1);
-
-        n = Integer.parseInt(br.readLine());
-        strings = br.readLine().split(" ");
-        int[] a2 = new int[n];
-        for(int i=0; i<n; i++) {
-            a2[i] = Integer.parseInt(strings[i]);
-        }
-
-        for(int tg : a2) {
-//            sb.append(upper_idx(tg, a1) - lower_idx(tg, a1) + " ");
-            int li = lower_idx(tg, a1);
-            int ri = upper_idx(tg, a1);
-            if(li >= a1.length) sb.append(0 + " ");
-            else if(a1[li]!=tg) sb.append(0 + " ");
-            else sb.append(ri-li).append(" ");
-        }
-//        n = Integer.parseInt(br.readLine());
-//        strings = br.readLine().split(" ");
-//        for(int i=0; i<n; i++) {
-//            int num = Integer.parseInt(strings[i]);
-//            int li = lower_idx(num, a1);
-//            int ri = upper_idx(num, a1);
-//            if(a1[li]!=num) sb.append(0 + " ");
-//            else sb.append(ri-li).append(" ");
-////            System.out.println("num : " + num + " li : " + li + " value : " + arr[li]);
-////            System.out.println("num : " + num + " ri : " + ri + " value : " + arr[li]);
-//        }
-        System.out.println(sb.toString());
-
+        System.out.println(sb);
     }
 
-    public static int lower_idx (int tg, int[] arr) {
+    public int getLowerIdx(int tg) {
         int st = 0;
-        int en = arr.length;
+        int en = n;
 
         while(st < en) {
             int mid = (st + en) / 2;
-            if(tg <= arr[mid]) en = mid;
-            else st = mid + 1;          //tg > arr[mid]
+            if(tg <= arr1[mid]) {
+                en = mid;
+            } else {
+                st = mid + 1;
+            }
         }
         return st;
     }
 
-    public static int upper_idx (int tg, int[] arr) {
+    public int getUpperIdx(int tg) {
         int st = 0;
-        int en = arr.length;
+        int en = n;
 
         while(st < en) {
             int mid = (st + en) / 2;
-            if(tg < arr[mid]) en = mid;
-            else st = mid + 1;          //tg >= arr[mid]
+            if(tg < arr1[mid]) {
+                en = mid;
+            } else {
+                st = mid + 1;
+            }
         }
         return st;
     }
+
+    private void printArr(int[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for(int num : arr) {
+            sb.append(num).append(" ");
+        }
+        System.out.println(sb);
+    }
+
 }
