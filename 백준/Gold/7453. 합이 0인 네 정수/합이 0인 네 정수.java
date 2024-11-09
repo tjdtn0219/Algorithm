@@ -1,22 +1,28 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 public class Main {
-    static int n;
-    static long[] A;
-    static long[] B;
-    static long[] C;
-    static long[] D;
 
-    static long findByBinarySearch() {
-        long[] AB = new long[n * n];
-        long[] CD = new long[n * n];
+    static final int N = 4;
+    
+    int n;
+    long[] A;
+    long[] B;
+    long[] C;
+    long[] D;
+    long[] AB;
+    long[] CD;
 
+    public static void main(String[] args) {
+        new Main().solution();
+    }
+
+    public void solution() {
+        input();
+        solve();
+    }
+
+    public void solve() {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 AB[i * n + j] = A[i] + B[j];
@@ -27,63 +33,65 @@ public class Main {
         Arrays.sort(AB);
         Arrays.sort(CD);
 
-        long count = 0;
-        for (int ab = 0; ab < n * n; ab++) {
-            long target = -1 * AB[ab];
-
-            int l = 0, r = n * n;
-            while (l < r) {
-                int m = (l + r) / 2;
-
-                if (CD[m] < target) {
-                    l = m + 1;
-                } else {
-                    r = m;
-                }
-            }
-
-            int lowerBound = l;
-
-            l = 0;
-            r = n * n;
-            while (l < r) {
-                int m = (l + r) / 2;
-
-                if (CD[m] <= target) {
-                    l = m + 1;
-                } else {
-                    r = m;
-                }
-            }
-
-            int upperBound = l;
-
-            count += (upperBound - lowerBound);
+        long ans = 0;
+        for(long ab : AB) {
+            long cd = -ab;
+            ans += getUpperIdx(cd, CD) - getLowerIdx(cd, CD);
         }
-
-        return count;
+        System.out.println(ans);
     }
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-
-        n = Integer.parseInt(br.readLine());
-        A = new long[n];
-        B = new long[n];
-        C = new long[n];
-        D = new long[n];
-
-        for (int i = 0; i < n; i++) {
-            st = new StringTokenizer(br.readLine());
-
-            A[i] = Long.parseLong(st.nextToken());
-            B[i] = Long.parseLong(st.nextToken());
-            C[i] = Long.parseLong(st.nextToken());
-            D[i] = Long.parseLong(st.nextToken());
+    public int getLowerIdx(long tg, long[] arr) {
+        int st = 0;
+        int en = n*n;
+        while(st < en) {
+            int mid = (st + en) / 2;
+            if(tg <= arr[mid]) {
+                en = mid;
+            } else {
+                st = mid + 1;
+            }
         }
-
-        System.out.println(findByBinarySearch());
-        br.close();
+        return st;
     }
+
+    public int getUpperIdx(long tg, long[] arr) {
+        int st = 0;
+        int en = n*n;
+        while(st < en) {
+            int mid = (st + en) / 2;
+            if(tg < arr[mid]) {
+                en = mid;
+            } else {
+                st = mid + 1;
+            }
+        }
+        return st;
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            n = Integer.parseInt(br.readLine());
+            A = new long[n];
+            B = new long[n];
+            C = new long[n];
+            D = new long[n];
+
+            for (int i = 0; i < n; i++) {
+                String[] s = br.readLine().split(" ");
+                A[i] = Long.parseLong(s[0]);
+                B[i] = Long.parseLong(s[1]);
+                C[i] = Long.parseLong(s[2]);
+                D[i] = Long.parseLong(s[3]);
+            }
+            
+            AB = new long[n * n];
+            CD = new long[n * n];
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
+        }
+    }
+
 }
