@@ -1,52 +1,60 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-    	
+    int h, w;
+    int[] arr;
 
-    	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    	
-    	String[] strings = br.readLine().split(" ");
-    	
-    	int h = Integer.parseInt(strings[0]);
-    	int w = Integer.parseInt(strings[1]);
-    	
-    	strings = br.readLine().split(" ");
-    	int[] heights = new int[w];
-    	for(int i=0; i<w; i++) {
-    		heights[i] = Integer.parseInt(strings[i]);
-    	}
-    	
-    	int[] left_max_height = new int[w];		//idx 기준 왼쪽에서 가장 큰 높이
-    	int max = heights[0];
-    	for(int i=0; i<w; i++) {
-    		if(max < heights[i]) max = heights[i];
-    		left_max_height[i] = max;
-    	}
-    	
-    	int[] right_max_height = new int[w];	//idx기준 오른쪽에서 가장 큰 높이
-    	max = heights[w-1];
-    	for(int i=w-1; i>=0; i--) {
-    		if(max < heights[i]) max = heights[i];
-    		right_max_height[i] = max;
-    	}
-
-    	int[] flood_heights = new int[w];		//빗물 높이
-    	for(int i=0; i<w; i++) {
-    		flood_heights[i] = Math.min(left_max_height[i], right_max_height[i]);
-    	}
-    	
-    	int ans = 0;
-    	for(int i=0; i<w; i++) {
-    		ans += flood_heights[i] - heights[i];
-    	}
-    	
-    	System.out.println(ans);
-    	
+    public static void main(String[] args) {
+        new Main().solution();
     }
-    
+
+    public void solution() {
+        input();
+        solve();
+    }
+
+    public void solve() {
+        int ans = 0;
+        for(int i=1; i<w-1; i++) {
+            int left = getMaxHighLeft(i);
+            int right = getMaxHighRight(i);
+            int minH = Math.min(left, right);
+            if(minH - arr[i] > 0) {
+                ans += minH - arr[i];
+            }
+        }
+        System.out.println(ans);
+    }
+
+    public int getMaxHighLeft(int idx) {
+        int maxH = 0;
+        for(int i=0; i<idx; i++) {
+            maxH = Math.max(maxH, arr[i]);
+        }
+        return maxH;
+    }
+
+    public int getMaxHighRight(int idx) {
+        int maxH = 0;
+        for(int i=idx+1; i<w; i++) {
+            maxH = Math.max(maxH, arr[i]);
+        }
+        return maxH;
+    }
+
+    public void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] h_w = br.readLine().split(" ");
+            h = Integer.parseInt(h_w[0]);
+            w = Integer.parseInt(h_w[1]);
+            arr = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!");
+            throw new RuntimeException(e);
+        }
+    }
+
 }
