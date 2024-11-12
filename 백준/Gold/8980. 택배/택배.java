@@ -3,85 +3,68 @@ import java.util.*;
 
 public class Main {
 
-    int n, m, c;
-    List<Delivery> deliveries;
+    public static int n;
 
-    public static void main(String[] args) {
-        new Main().solution();
-    }
+    public static void main(String[] args) throws IOException {
 
-    public void solution() {
-        input();
-        solve();
-    }
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public void input() {
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            deliveries = new ArrayList<>();
-            String[] tmp = br.readLine().split(" ");
-            n = Integer.parseInt(tmp[0]);
-            c = Integer.parseInt(tmp[1]);
-            m = Integer.parseInt(br.readLine());
-            for(int i=0; i<m; i++) {
-                tmp = br.readLine().split(" ");
-                int sender = Integer.parseInt(tmp[0]);
-                int receiver = Integer.parseInt(tmp[1]);
-                int weight = Integer.parseInt(tmp[2]);
-                deliveries.add(new Delivery(sender, receiver, weight));
-            }
-            Collections.sort(deliveries, (o1, o2) -> {
-                if(o1.receiver == o2.receiver) {
-                    return o1.sender - o2.sender;
-                }
-                return o1.receiver - o2.receiver;
-            });
-        } catch (Exception e) {
-            System.out.println("INPUT ERROR!!!");
-            throw new RuntimeException(e);
-        }
-    }
+        String[] strings = br.readLine().split(" ");
+        int n = Integer.parseInt(strings[0]);
+        int max = Integer.parseInt(strings[1]);
 
-    public void solve() {
-        int[] weights = new int[n+1]; //각 마을에서 담을 수 있는 최대 용량
-        Arrays.fill(weights, c);
-
-        int answer = 0;
-
-        for(Delivery delivery : deliveries) {
-
-            int maxWeight = Integer.MAX_VALUE;
-
-            //source ~ dest 까지 담을 수 있는 최대 무게 계산
-            for(int i=delivery.sender; i<delivery.receiver; i++) {
-                maxWeight = Math.min(maxWeight, weights[i]);
-            }
-
-            if(maxWeight >= delivery.weight) {
-                for(int i=delivery.sender; i<delivery.receiver; i++) {
-                    weights[i] -= delivery.weight;
-                }
-                answer += delivery.weight;
-            } else {
-                for(int i=delivery.sender; i<delivery.receiver; i++) {
-                    weights[i] -= maxWeight;
-                }
-                answer += maxWeight;
-            }
+        List<Delivery> list = new ArrayList<>();
+        int T = Integer.parseInt(br.readLine());
+        for(int t=0; t<T; t++) {
+            strings = br.readLine().split(" ");
+            int s = Integer.parseInt(strings[0]);
+            int d = Integer.parseInt(strings[1]);
+            int w = Integer.parseInt(strings[2]);
+            list.add(new Delivery(s,d,w));
         }
 
-        System.out.println(answer);
+        Collections.sort(list, (o1,o2) -> {
+            if(o1.dest==o2.dest) return o2.source-o1.source;
+            return o1.dest - o2.dest;
+        });
+
+        int ans = 0;
+        int[] weights = new int[n+1];
+        for(Delivery del : list) {
+            boolean flag = false;
+            int over = 0;
+            for(int i=del.source; i<=del.dest; i++) {
+                if(weights[i] + del.w > max) {
+                    over = Math.max(over, weights[i] + del.w - max);
+                }
+            }
+            for(int i=del.source; i<=del.dest-1; i++) {
+                weights[i] += del.w - over;
+            }
+            ans += del.w-over;
+//            System.out.print("add : " + (del.w-over) +" || ");
+//            for(int i=1; i<=n; i++) {
+//                System.out.print(weights[i] + " ");
+//            }
+//            System.out.println();
+        }
+//        for(int i=1; i<=n; i++) {
+//            System.out.print(weights[i] + " ");
+//        }
+//        System.out.println();
+
+        System.out.println(ans);
+
     }
 }
 
 class Delivery {
-    int sender;
-    int receiver;
-    int weight;
-
-    public Delivery(int sender, int receiver, int weight) {
-        this.sender = sender;
-        this.receiver = receiver;
-        this.weight = weight;
+    int source;
+    int dest;
+    int w;
+    public Delivery(int source, int dest, int w) {
+        this.source = source;
+        this.dest = dest;
+        this.w = w;
     }
 }
