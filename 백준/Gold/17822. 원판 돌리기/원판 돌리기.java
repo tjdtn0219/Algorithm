@@ -19,32 +19,16 @@ public class Main {
         solve();
     }
 
-    private void printBoard() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<m; j++) {
-                sb.append(board[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
-        System.out.println("=======================");
-    }
-
     public void solve() {
         for(int[] command : commands) {
             int x = command[0];
             for(int i=x; i<=n; i+=x) {
                 rotate(i-1, command[1], command[2]);
             }
-            // printBoard();
             boolean flag = checkAdj();
-            // printBoard();
             if(!flag) {
                 checkAvg();
-                // printBoard();
             }
-            // System.out.println("-----cmd-----");
         }
         System.out.println(getSum());
     }
@@ -74,7 +58,6 @@ public class Main {
         }
 
         double avg = (double) sum / cnt;
-        // System.out.println("sum, cnt , avg : " + sum + ", " + cnt + ", " + avg);
         
         for(int i=0; i<n; i++) {
             for(int j=0; j<m; j++) {
