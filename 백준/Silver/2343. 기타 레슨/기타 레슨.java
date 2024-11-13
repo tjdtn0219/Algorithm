@@ -49,9 +49,15 @@ public class Main {
         int st = max;
         int en = sums[n-1];
 
+        int res = Integer.MAX_VALUE;
         while(st < en) {
             int mid = (st + en) / 2;
-            if(getCount(mid) <= m) en = mid;
+            int cnt = getCount(mid);
+            if(cnt < m) en = mid;
+            else if(cnt == m) {
+                en = mid;
+                res = Math.min(res, mid);
+            }
             else st = mid + 1;
         }
 
