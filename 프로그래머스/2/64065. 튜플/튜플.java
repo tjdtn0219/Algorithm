@@ -1,56 +1,55 @@
 import java.util.*;
 
 class Solution {
+    static final int MAX = 100_000;
     
-    HashMap<Integer, HashSet<Integer>> hMap;
-    int n;
+    String s;
     
     public int[] solution(String s) {
+        int[] answer = {};
         init(s);
         return solve();
     }
     
-    public void init(String s) {
-        hMap = new HashMap<>();
-        fillArrMap(s);
-    }
-    
-    public void fillArrMap(String s) {
-        s = s.substring(2, s.length()-2);
-        String[] tmp = s.split("\\{");
-        n = tmp.length;
-        for(String str : tmp) {
-            saveIntArrInArrMap(str);
-        }
-    }
-    
-    public void saveIntArrInArrMap(String s) {
-        String[] tmp = s.split(",");
-        HashSet<Integer> hSet = new HashSet<>();
-        List<Integer> list = new ArrayList<>();
-        for(String str : tmp) {
-            if(str.charAt(str.length() - 1) == '}') str = str.substring(0, str.length()-1);
-            list.add(Integer.parseInt(str));
-            hSet.add(Integer.parseInt(str));
-        }
-        int n = list.size();
-        int[] arr = list.stream().mapToInt(Integer::intValue).toArray();
-        hMap.put(n, hSet);
-    }
-    
     public int[] solve() {
-        // System.out.println(" n ::: " + n);
-        int[] answer = new int[n];
-        for(int i=1; i<=n; i++) {
-            HashSet<Integer> hset = hMap.get(i);
-            for(int num : answer) {
-                hset.remove(num);
-            }
-            for(int num : hset) {
-                answer[i-1] = num;
-            }
-            // System.out.println("남은 Set 개수 : " + hset.size());
+        return parseStr();
+    }
+    
+    public int[] parseStr() {
+        String[] splits = s.substring(2, s.length() - 2).split("\\{");
+        HashMap<Integer, HashSet<Integer>> map = new HashMap<>();
+        int len = 0;
+        for(String tmp : splits) {
+            // System.out.println("tmp : " + tmp);
+            HashSet<Integer> set = getSet(tmp);
+            map.put(set.size(), set);
+            len++;
         }
-        return answer;
+        
+        boolean[] vis = new boolean[MAX+1];
+        List<Integer> ansList = new ArrayList<>();
+        for(int i=1; i<=len; i++) {
+            for(int num : map.get(i)) {
+                // System.out.println("i : " + i + ", num : " + num);
+                if(vis[num]) continue;
+                vis[num] = true;
+                ansList.add(num);
+            }
+        }
+        return ansList.stream().mapToInt(Integer::intValue).toArray();
+    }
+    
+    public HashSet<Integer> getSet(String str) {
+        HashSet<Integer> set = new HashSet<>();
+        String[] splits = str.split(",|\\}");
+        for(String s : splits) {
+            // System.out.println("tmp2 : " + s);
+            set.add(Integer.parseInt(s));
+        }
+        return set;
+    }
+    
+    public void init(String s) {
+        this.s = s;
     }
 }
