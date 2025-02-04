@@ -1,81 +1,90 @@
 import java.util.*;
 
+class Pair {
+    int join;
+    int sum;
+    public Pair(int join, int sum) {
+        this.join = join;
+        this.sum = sum;
+    }
+}
+
 class Solution {
     
-    public final int[] discounts = {10, 20, 30, 40};
-    public int n;
-    public int[] comb;
-    public PriorityQueue<Pair> pq;
-    public int[] answer;
+    static final int[] SALES = {10, 20, 30, 40};
+    static final double[] DISCOUNTS = {0.9, 0.8, 0.7, 0.6};
+    
+    int n, m;
+    int[][] users;
+    int[] emoticons;
+    PriorityQueue<Pair> pq;
+    int[] ans;
     
     public int[] solution(int[][] users, int[] emoticons) {
-        init(emoticons);
-        
-        makeComb(0, users, emoticons);
-        
-        Pair ans = pq.poll();
-        answer[0] = ans.joinCnt;
-        answer[1] = ans.profit;
-        int[] tmp = ans.discounts;
-  
-        return answer;
+        init(users, emoticons);
+        solve();
+        return ans;
     }
     
-    public void init(int[] emoticons) {
-        answer = new int[2];
-        n = emoticons.length;
-        comb = new int[n];
-        pq = new PriorityQueue<>((o1, o2) -> {
-            if(o1.joinCnt == o2.joinCnt) {
-                return o2.profit - o1.profit;
-            }
-            return o2.joinCnt - o1.joinCnt;
-        });
+    public void solve() {
+        dfs(0, new int[m]);
+        ans[0] = pq.peek().join;
+        ans[1] = pq.peek().sum;
     }
     
-    public void func(int[][] users, int[] emojis) {
-        int joinCnt = 0;
-        int buySum = 0;
-        for(int[] user : users) {
-            int sum = 0;
-            int percent = user[0];
-            int price = user[1];
-            for(int i=0; i<n; i++) {
-                int idx = comb[i];
-                if(discounts[idx] >= percent) {
-                    sum += emojis[i] * (100-discounts[idx]) / 100;
+    public void printArr(int[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for(int num : arr) {
+            sb.append(SALES[num]).append(" ");
+        }
+        System.out.println("Comb : " + sb);
+    }
+    
+    public void dfs(int k, int[] comb) {
+        if(k == m) {
+            int joinNum = 0;
+            int totalSum = 0;
+            // printArr(comb);
+            for(int[] user : users) {
+                int sum = 0;
+                for(int i=0; i<m; i++) {
+                    // System.out.println("SALE : " + SALES[comb[i]] + ", USER : " + user[0]);
+                    if(SALES[comb[i]] < user[0]) continue;
+                    // 구매
+                    sum += emoticons[i] * DISCOUNTS[comb[i]];
+                }
+                // System.out.println("sum : " + sum);
+                if(sum >= user[1]) {
+                    //플러스 가입
+                    joinNum++;
+                } else {
+                    //이모티콘 구입
+                    totalSum += sum;
                 }
             }
-            if(sum >= price) {
-                joinCnt++;
-            } else {
-                buySum += sum;
-            }
-        }
-
-        pq.add(new Pair(joinCnt, buySum, comb));
-    }
-    
-    public void makeComb(int k, int[][] users, int[] emojis) {
-        if(k==n) {
-            func(users, emojis);
+            pq.add(new Pair(joinNum, totalSum));
+            // System.out.println("join : " + joinNum + ", totalSum : " + totalSum);
             return ;
         }
         
         for(int i=0; i<4; i++) {
             comb[k] = i;
-            makeComb(k+1, users, emojis);
+            dfs(k+1, comb);
         }
+        
     }
-}
-
-class Pair {
-    int joinCnt;
-    int profit;
-    int[] discounts;
-    public Pair(int joinCnt, int profit, int[] discounts) {
-        this.joinCnt = joinCnt;
-        this.profit = profit;
-        this.discounts = discounts;
+    
+    public void init(int[][] users, int[] emoticons) {
+        this.users = users;
+        this.emoticons = emoticons;
+        this.n = users.length;
+        this.m = emoticons.length;
+        this.pq = new PriorityQueue<>((o1, o2) -> {
+            if(o1.join == o2.join) {
+                return o2.sum - o1.sum;
+            }
+            return o2.join - o1.join;
+        });
+        this.ans = new int[2];
     }
 }
