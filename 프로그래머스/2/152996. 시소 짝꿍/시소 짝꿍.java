@@ -1,72 +1,53 @@
 import java.util.*;
+
 class Solution {
-    
-    static final double[] multis = {1.0, 4.0/3.0, 1.5, 2.0};
     
     int n;
     int[] weights;
+    HashMap<Double, Integer> cntMap;
+    long ans;
     
     public long solution(int[] weights) {
-        long answer = 0;
-        init(weights);
-        // printWeights();
-        return solve();
-        // return answer;
+        init(n, weights);
+        solve();
+        return ans;
     }
     
-    public void printWeights() {
-        for(int num : weights) {
-            System.out.print(num + " ");
-        }
-        System.out.println();
-    }
-    
-    public long solve() {
-        long cnt = 0;
-        for(int i=0; i<n-1; i++) {
-            int weight = weights[i];
-            for(int j=0; j<4; j++) {
-                double multiWeight = (double) weight * multis[j];
-                // System.out.println("idx : " + i + ", target : " + multiWeight);
-                int lowerIdx = lowerBound(i, multiWeight);
-                int upperIdx = upperBound(i, multiWeight);
-                // System.out.println("lowerIdx : " + lowerIdx + " upperIdx : " + upperIdx);
-                if(lowerIdx < n && (double) weights[lowerIdx] == multiWeight) {
-                    // System.out.println(weight + " " + weights[lowerIdx]);
-                    cnt += upperIdx - lowerIdx;
+    public void solve() {
+        Arrays.sort(weights);
+        //100 100 150 150 180 270 360
+        int last = -1;
+        for(int w : weights) {
+            double w1 = w * 1.0;
+            double w2 = w * 1.5;
+            double w3 = w * (4.0/3.0);
+            double w4 = w * (2.0);
+            // System.out.println(w2 + ", " + w3 + ", " + w4);
+            if(w == last) {
+                ans += cntMap.getOrDefault(w2, 0);
+                ans += cntMap.getOrDefault(w3, 0);
+                ans += cntMap.getOrDefault(w4, 0);
+            } else {
+                long sameCnt = cntMap.getOrDefault(w1, 0);
+                if(sameCnt > 1) {
+                    ans += sameCnt * (sameCnt-1) / 2;
                 }
+                ans += cntMap.getOrDefault(w2, 0);
+                ans += cntMap.getOrDefault(w3, 0);
+                ans += cntMap.getOrDefault(w4, 0);
             }
+            // System.out.println("w : " + w + ", ans : " + ans + "\n");
+            last = w;
         }
-        return cnt;
     }
     
-    public void init(int[] weights) {
-        this.weights = weights.clone();
-        Arrays.sort(this.weights);
-        n = weights.length;
-    }
-    
-    public int lowerBound(int idx, double tg) {
-        int st = idx + 1;
-        int en = n;
-        
-        while(st < en) {
-            int mid = (st + en) / 2;
-            if(tg <= (double) weights[mid]) en = mid;
-            else st = mid + 1;
+    public void init(int n, int[] weights) {
+        this.n = weights.length;
+        this.weights = weights;
+        this.cntMap = new HashMap<>();
+        for(int w : weights) {
+            double dw = (double) w;
+            cntMap.put(dw, cntMap.getOrDefault(dw, 0) + 1);
         }
-        return st;
-    }
-    
-    public int upperBound(int idx, double tg) {
-        int st = idx + 1;
-        int en = n;
-        
-        while(st < en) {
-            int mid = (st + en) / 2;
-            if(tg < (double) weights[mid]) en = mid;
-            else st = mid + 1;
-        }
-        return st;
     }
 }
