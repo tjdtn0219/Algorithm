@@ -1,58 +1,56 @@
+import java.util.*;
+
+class Reserve {
+    int st;
+    int en;
+    public Reserve(int st, int en) {
+        this.st = st;
+        this.en = en;
+    }
+}
+
 class Solution {
     
-    int[] bookTime;
+    int n;
+    Reserve[] reserves;
+    int ans;
     
     public int solution(String[][] book_time) {
-        int answer = 0;
-        init();
-        answer = solve(book_time);
-        // printBookTime();
-        return answer;
+        init(book_time);
+        solve();
+        return ans;
     }
     
-    public void init() {
-        bookTime = new int[26*60];
+    public void solve() {
+        int[] arr = new int[timeToNum("25:00")];
+        int[] sum = new int[timeToNum("25:00")];
+        for(Reserve reserve : reserves) {
+            // System.out.println(reserve.st + " : " + reserve.en);
+            arr[reserve.st] += 1;
+            arr[reserve.en + 10] -= 1;
+        }
+        
+        sum[0] = arr[0];
+        ans = sum[0];
+        for(int i=1; i<=timeToNum("24:00"); i++) {
+            sum[i] = sum[i-1] + arr[i];
+            ans = Math.max(ans, sum[i]);
+        }
     }
     
-    public int convertToInt(String time) {
+    public void init(String[][] book_time) {
+        this.n = book_time.length;
+        reserves = new Reserve[n];
+        for(int i=0; i<n; i++) {
+            reserves[i] = new Reserve(timeToNum(book_time[i][0]), timeToNum(book_time[i][1]));
+        }
+        
+    }
+    
+    public int timeToNum(String time) {
         String[] tmp = time.split(":");
-        int h = Integer.parseInt(tmp[0]);
-        int m = Integer.parseInt(tmp[1]);
-        return 60*h + m;
+        int hour = Integer.parseInt(tmp[0]);
+        int min = Integer.parseInt(tmp[1]);
+        return 60*hour + min;
     }
-    
-    public int solve(String[][] bookInfos) {
-        for(String[] bookInfo : bookInfos) {
-            int startTime = convertToInt(bookInfo[0]);
-            int endTime = convertToInt(bookInfo[1]);
-            int cleanTime = 10;
-            // System.out.println("st : " + startTime + " en : " + endTime);
-            fillBookTime(startTime, endTime + cleanTime);
-        }
-        return findMax();
-    }
-    
-    public void printBookTime() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<bookTime.length; i++) {
-            sb.append(bookTime[i] + " ");
-        }
-        System.out.println(sb);
-    }
-    
-    public int findMax() {
-        int max = 0;
-        for(int i=0; i<bookTime.length; i++) {
-            max = Math.max(max, bookTime[i]);
-        }
-        return max;
-    }
-    
-    public void fillBookTime(int start, int end) {
-        for(int i=start; i<end; i++) {
-            bookTime[i]++;
-        }
-    }
-    
-    
 }
