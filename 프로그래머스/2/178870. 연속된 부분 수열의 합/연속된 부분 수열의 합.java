@@ -2,10 +2,10 @@ import java.util.*;
 
 class Solution {
     
-    int[] arr;
-    int[] sumArr;
     int n;
+    int[] sequence;
     int k;
+    int[] sums;
     int[] ans;
     
     public int[] solution(int[] sequence, int k) {
@@ -19,9 +19,10 @@ class Solution {
         int right = 0;
         int min = Integer.MAX_VALUE;
         while(left <= right && right < n) {
-            int sum;
-            if(left == 0) sum = sumArr[right];
-            else sum = sumArr[right] - sumArr[left-1];
+            int sum = 0;
+            if(left == 0) sum = sums[right];
+            else sum = sums[right] - sums[left-1];
+            
             if(sum == k) {
                 if(right - left < min) {
                     min = right - left;
@@ -30,22 +31,22 @@ class Solution {
                 }
                 right++;
             } else if(sum > k) {
-                left++;
+                sum = left++;
             } else {
                 right++;
             }
         }
     }
     
-    public void init(int[] arr, int k) {
-        this.arr = arr;
-        this.n = arr.length;
-        this.sumArr = new int[n];
-        sumArr[0] = arr[0];
-        for(int i=1; i<n; i++) {
-            sumArr[i] = sumArr[i-1] + arr[i];
-        }
+    public void init(int[] sequence, int k) {
+        this.n = sequence.length;
+        this.sequence = sequence;
         this.k = k;
+        this.sums = new int[n];
+        sums[0] = sequence[0];
+        for(int i=1; i<n; i++) {
+            sums[i] = sums[i-1] + sequence[i];
+        }
         this.ans = new int[2];
     }
 }
