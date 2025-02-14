@@ -1,87 +1,84 @@
 import java.util.*;
 
+class Task {
+    String name;
+    int startTime;
+    int playTime;
+    
+    public Task(String name, int startTime, int playTime) {
+        this.name = name;
+        this.startTime = startTime;
+        this.playTime = playTime;
+    }
+}
+
 class Solution {
     
-    Queue<Plan> q;
-    Stack<Plan> stk;
-    List<String> answer;
+    List<Task> taskList;
+    Stack<Task> stk;
     
     public String[] solution(String[][] plans) {
         
         init(plans);
-        solve();
+        return solve();
+    }
+    
+    public String[] solve() {
+        List<String> ansList = new ArrayList<>();
+        Collections.sort(taskList, (t1, t2) -> t1.startTime - t2.startTime);
+        Task cur = taskList.get(0);
         
-        return answer.toArray(new String[0]);
-    }
-    
-    public void init(String[][] plans) {
-        q = new LinkedList<>();
-        stk = new Stack<>();
-        answer = new ArrayList<>();
-        Arrays.sort(plans, (p1, p2) -> convertToInt(p1[1]) - convertToInt(p2[1]));
-        for(String[] plan : plans) {
-            q.add(new Plan(plan[0], convertToInt(plan[1]), Integer.parseInt(plan[2])));
-        }
-        
-    }
-    
-    public int convertToInt(String time) {
-        int h = Integer.parseInt(time.split(":")[0]);
-        int m = Integer.parseInt(time.split(":")[1]);
-        return 60*h + m;
-    }
-    
-    public void solve() {
-        Plan cur = q.poll();
-        while(!q.isEmpty()) {
-            Plan nxt = q.poll();
-            if(cur.startTime + cur.restTime < nxt.startTime) {
-                answer.add(cur.name);
-                int idleTime = nxt.startTime - (cur.startTime + cur.restTime);
-                doStoppedPlans(idleTime);
-            } else if(cur.startTime + cur.restTime > nxt.startTime) {
-                int restTime = (cur.startTime + cur.restTime) - nxt.startTime;
-                cur.restTime  = restTime;
-                stk.add(cur);
+        for(int i=1; i<taskList.size(); i++) {
+            Task nxt = taskList.get(i);
+            // System.out.println("cur : " + cur.name + ", nxt : " + nxt.name);
+            if(cur.startTime + cur.playTime < nxt.startTime) {
+                // System.out.println("TAG1");
+                ansList.add(cur.name);
+                int restTime = nxt.startTime - (cur.startTime + cur.playTime);
+                
+                while(!stk.isEmpty()) {
+                    Task task = stk.pop();
+                    if(task.playTime <= restTime) {
+                        restTime -= task.playTime;
+                        ansList.add(task.name);
+                    } else {
+                        task.playTime -= restTime;
+                        stk.push(task);
+                        break;
+                    }
+                }
+            } else if(cur.startTime + cur.playTime > nxt.startTime) {
+                // System.out.println("TAG2");
+                cur.playTime = cur.startTime + cur.playTime - nxt.startTime;
+                stk.push(cur);
             } else {
-                // ==
-                answer.add(cur.name);
+                // System.out.println("TAG3");
+                ansList.add(cur.name);
             }
             cur = nxt;
         }
-        answer.add(cur.name);
-        doRestStopped();
-    }
-    
-    public void doRestStopped() {
-        while(!stk.isEmpty()) {
-            answer.add(stk.pop().name);
-        }
-    }
-    
-    public void doStoppedPlans(int time) {
-        while(!stk.isEmpty()) {
-            Plan stopped = stk.pop();
-            if(stopped.restTime <= time) {
-                answer.add(stopped.name);
-                time -= stopped.restTime;
-            } else {
-                stopped.restTime -= time;
-                stk.add(stopped);
-                break;
-            }
-            
-        }
-    }
-}
+        
+        ansList.add(cur.name);
 
-class Plan {
-    String name;
-    int startTime;
-    int restTime;
-    public Plan(String name, int startTime, int restTime) {
-        this.name = name;
-        this.startTime = startTime;
-        this.restTime = restTime;
+        while(!stk.isEmpty()) {
+            ansList.add(stk.pop().name);
+        }
+
+        return ansList.toArray(new String[0]);
+    }
+    
+    public void init(String[][] plans) {
+        taskList = new ArrayList<>();
+        stk = new Stack<>();
+        for(String[] plan : plans) {
+            taskList.add(new Task(plan[0], timeToAmount(plan[1]), Integer.parseInt(plan[2])));
+        }
+    }
+    
+    public int timeToAmount(String time) {
+        String[] tmp = time.split(":");
+        int h = Integer.parseInt(tmp[0]);
+        int m = Integer.parseInt(tmp[1]);
+        return 60*h + m;
     }
 }
