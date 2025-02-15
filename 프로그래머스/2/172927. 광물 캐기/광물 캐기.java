@@ -1,117 +1,96 @@
+import java.util.*;
+
 class Solution {
     
-    static final int LEN = 3;
+    static final int[][] points = {
+        {1, 1, 1},
+        {5, 1, 1},
+        {25, 5, 1}
+    };
     
-    int ans;
     int[] picks;
     int[] minerals;
-    int[][] tiredArr;   //tiredArr[곡괭이][광물]
+    int answer;
     int[] comb;
     int n;
     
     public int solution(int[] picks, String[] minerals) {
-        // 0: 돌, 1: 철, 2: 다이아몬드
         init(picks, minerals);
-        // print();
-        makeComb(0, new boolean[n]);
-        return ans;
+        solve();
+        return answer;
     }
     
-    private void print() {
-        System.out.println("====picks====");
-        for(int p : picks) {
-            System.out.print(p + " ");
+    public void solve() {
+        makeComb(0);
+    }
+    
+    private void printArr(int[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for(int num : arr) {
+            sb.append(num).append(" ");
         }
-        System.out.println("\n============");
+        System.out.println(sb);
     }
     
-    public void makeComb(int k, boolean[] vis) {
+    public void makeComb(int k) {
         if(k == n) {
-            // StringBuilder sb = new StringBuilder();
-            // for(int num : comb) {
-            //     sb.append(num).append(" ");
-            // }
-            // System.out.println(sb);
-            int[] pickArr = getPickArr();
-            mine(pickArr);
+            // printArr(comb);
+            int point = pickMineral();
+            answer = Math.min(answer, point);
             return ;
         }
         
-        for(int i=0; i<n; i++) {
-            if(vis[i]) continue;
-            vis[i] = true;
-            comb[k] = i;
-            makeComb(k+1, vis);
-            vis[i] = false;
+        for(int i=0; i<3; i++) {
+            if(picks[i] > 0) {
+                comb[k] = i;
+                picks[i]--;
+                makeComb(k+1);
+                picks[i]++;
+            }
         }
     }
     
-    public void mine(int[] pickArr) {
-        int min = Math.min(pickArr.length, minerals.length);
-        int sum = 0;
-        for(int i=0; i<min; i++) {
-            int p = pickArr[i];
-            int m = minerals[i];
-            sum += tiredArr[p][m];
+    public int pickMineral() {
+        // dia = 0, iron = 1, stone = 2
+        int res = 0;
+        int[] pickArr = getPickArr();
+        // printArr(pickArr);
+        for(int i=0; i<Math.min(pickArr.length, minerals.length); i++) {
+            int pick = pickArr[i];
+            int mineral = minerals[i];
+            res += points[pick][mineral];
         }
-        ans = Math.min(ans, sum);
+        return res;
     }
     
     public int[] getPickArr() {
         int[] arr = new int[n*5];
-        for(int i=0; i<n; i++) {
-            int idx = comb[i];
-            int pick = picks[idx];
-            for(int j=0; j<5; j++) {
-                arr[i*5 + j] = pick;
+        int idx = 0;
+        for(int pick : comb) {
+            for(int i=0; i<5; i++) {
+                arr[idx++] = pick;
             }
         }
         return arr;
     }
     
     public void init(int[] picks, String[] minerals) {
-        this.ans = Integer.MAX_VALUE;
-        n = 0;
-        int pickSum = 0;
-        for(int pick : picks) {
-            pickSum += pick;
-        }
-        int mineralCnt = minerals.length;
-        if(pickSum*5 <= mineralCnt) {
-            n = pickSum;
-        } else {
-            n = mineralCnt/5;
-            if(mineralCnt%5 != 0) n++;
-        }
-        System.out.println("n : " + n);
-        this.picks = new int[pickSum];
-        int idx = 0;
-        for(int i=0; i<LEN; i++) {
-            for(int j=0; j<picks[i]; j++) {
-                if(i == 0) this.picks[idx++] = 3;
-                else if(i == 1) this.picks[idx++] = 2;
-                else if(i == 2) this.picks[idx++] = 1;
-            }
-        }
+        this.picks = picks;
         this.minerals = new int[minerals.length];
         for(int i=0; i<minerals.length; i++) {
             if(minerals[i].equals("diamond")) {
-                this.minerals[i] = 3;
+                this.minerals[i] = 0;
             } else if(minerals[i].equals("iron")) {
-                this.minerals[i] = 2;
+                this.minerals[i] = 1;
             } else {
-                this.minerals[i] = 1;   
+                this.minerals[i] = 2;
             }
         }
-        this.tiredArr = new int[LEN+1][LEN+1];
-        for(int i=1; i<=LEN; i++) {
-            for(int j=1; j<=i; j++) {
-                tiredArr[i][j] = 1;
-            }
+        this.n = 0;
+        for(int pick : picks) {
+            n += pick;
         }
-        tiredArr[1][2] = 5;
-        tiredArr[1][3] = 25;
-        tiredArr[2][3] = 5;
-        comb = new int[n];
+        this.comb = new int[n];
+        this.answer = Integer.MAX_VALUE;
     }
 }
