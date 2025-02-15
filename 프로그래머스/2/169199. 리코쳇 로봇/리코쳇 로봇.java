@@ -1,144 +1,94 @@
 import java.util.*;
 
-class Solution {
-    
-    final int[] dx = {1,0,-1,0};
-    final int[] dy = {0,1,0,-1};
-    char[][] board;
-    Point sp;
-    Point gp;
-    int n, m;
-    int answer;
-    int[][] vis;
-    boolean[][] visited;
-    int tmp;
-    
-    public int solution(String[] board) {
-        
-        init(board);
-        if(!isAbleGetGoal()) answer = -1;
-        else answer = bfs();
-        // else answer = dfs(0, new Point(sp.x, sp.y));
-        return answer;
-    }
-    
-    public void init(String[] arr) {
-        answer = -1;
-        n = arr.length;
-        m = arr[0].length();
-        board = new char[n][m];
-        vis = new int[n][m];
-        visited = new boolean[n][m];
-        tmp = Integer.MAX_VALUE;
-        for(int i=0; i<arr.length; i++) {
-            for(int j=0; j<arr[i].length(); j++) {
-                if(arr[i].charAt(j) == 'R') {
-                    sp = new Point(i, j);
-                    board[i][j] = '.';
-                } else if(arr[i].charAt(j) == 'G') {
-                    gp = new Point(i, j);
-                    board[i][j] = '.';
-                } else {
-                    board[i][j] = arr[i].charAt(j);    
-                }
-            
-            }
-        }
-    }
-    
-    public boolean isAbleGetGoal() {
-        for(int dir=0; dir<4; dir++) {
-            int nx = gp.x + dx[dir];
-            int ny = gp.y + dy[dir];
-            if(!isInner(nx, ny)) return true;
-            if(board[nx][ny] == 'D') return true;
-        }
-        return false;
-    }
-    
-    public boolean isInner(int nx, int ny) {
-        if(nx<0 || ny<0 || nx>=n || ny>=m) {
-            return false;
-        } 
-        return true;
-    }
-    
-    public Point getAfterMove(Point cur, int dir) {
-        int x = cur.x;
-        int y = cur.y;
-        while(true) {
-            int nx = x + dx[dir];
-            int ny = y + dy[dir];
-            if(!isInner(nx, ny)) break;
-            if(board[nx][ny] == 'D') break;
-            x += dx[dir];
-            y += dy[dir];
-        }
-        return new Point(x, y);
-    }
-    
-    public int bfs() {
-        Queue<Point> q = new LinkedList<>();
-        q.add(new Point(sp.x, sp.y));
-        int cnt = 0;
-        while(!q.isEmpty()) {
-            int size = q.size();
-            cnt++;
-            for(int i=0; i<size; i++) {
-                Point cur = q.poll();
-                for(int dir=0; dir<4; dir++) {
-                    Point nxt = getAfterMove(cur, dir);
-                    if(visited[nxt.x][nxt.y]) {
-                        continue;
-                    }
-                    visited[nxt.x][nxt.y] = true;
-                    if(isGetGoal(nxt)) {
-                        return cnt; 
-                    }
-                    q.add(nxt);
-                }
-            }
-        }
-        return -1;
-    }
-    
-//     public int dfs(int k, Point cur) {
-//         if(k >= tmp) return -1;
-        
-//         if(isGetGoal(cur)) {
-//             tmp = Math.min(tmp, k);
-//             return k;
-//         }
-        
-//         int min = Integer.MAX_VALUE;
-//         boolean flag = false;
-//         for(int dir=0; dir<4; dir++) {
-//             Point nxt = getAfterMove(cur, dir);
-//             if(vis[nxt.x][nxt.y]>0 && vis[nxt.x][nxt.y] <= k) continue;
-//             vis[nxt.x][nxt.y]++;
-//             int val = dfs(k+1, nxt);
-//             vis[nxt.x][nxt.y]--;
-//             if(val > 0) {
-//                 flag = true;
-//                 min = Math.min(min, val);
-//             }
-//         }
-//         if(flag) return min;
-//         else return -1;
-//     }
-    
-    public boolean isGetGoal(Point cur) {
-        if(cur.x == gp.x && cur.y == gp.y) return true;
-        return false;
-    }
-}
-    
-
 class Point {
-    int x;
-    int y;
+    int x, y;
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
+}
+
+class Solution {
+    
+    static final int[] DX = {1,0,-1,0};
+    static final int[] DY = {0,1,0,-1};
+    
+    int n, m;
+    char[][] map;
+    int answer;
+    Point sp;
+    Point ep;
+    
+    public int solution(String[] board) {
+        init(board);
+        solve();
+        return answer;
+    }
+    
+    public void solve() {
+        answer = bfs();
+    }
+    
+    public int bfs() {
+        Queue<Point> q = new LinkedList<>();
+        boolean[][] vis = new boolean[n][m];
+        q.add(sp);
+        vis[sp.x][sp.y] = true;
+        
+        int cnt = 0;
+        while(!q.isEmpty()) {
+            int size = q.size();
+            for(int i=0; i<size; i++) {
+                Point cur = q.poll();
+                // System.out.println("cur : " + cur.x + ", " + cur.y);
+                if(cur.x == ep.x && cur.y == ep.y) return cnt;
+                for(int dir=0; dir<4; dir++) {
+                    Point nxt = move(cur, dir);
+                    if(vis[nxt.x][nxt.y]) continue;
+                    q.add(nxt);
+                    vis[nxt.x][nxt.y] = true;
+                }
+            }
+            cnt++;
+        }
+        
+        return -1;
+    }
+    
+    public Point move(Point cur, int dir) {
+        int x = cur.x;
+        int y = cur.y;
+        while(true) {
+            int nx = x + DX[dir];
+            int ny = y + DY[dir];
+            if(!isInner(nx, ny)) break;
+            if(map[nx][ny] == 'D') break;
+            x = nx;
+            y = ny;
+        }
+        return new Point(x, y);
+    }
+    
+    public boolean isInner(int x, int y) {
+        return 0<=x && 0<=y && x<n && y<m;
+    }
+    
+    public void init(String[] board) {
+        this.n = board.length;
+        this.m = board[0].length();
+        this.map = new char[n][m];
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                map[i][j] = board[i].charAt(j);
+                if(map[i][j] == 'R') {
+                    sp = new Point(i, j);
+                    map[i][j] = '.';
+                } else if(map[i][j] == 'G') {
+                    ep = new Point(i, j);
+                    map[i][j] = '.';
+                }
+            }
+        }
+    }
+    
 }
