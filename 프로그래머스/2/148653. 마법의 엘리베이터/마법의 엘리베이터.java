@@ -1,25 +1,27 @@
+import java.util.*;
+
 class Solution {
+    
     public int solution(int storey) {
         int ans = 0;
         
         while(storey > 0) {
-            int mod = storey % 10;
-            if(mod==5) {
-                if((storey/10)%10 >= 5) {
+            int remainder = storey % 10;
+            if(remainder == 5) {
+                ans += 5;
+                if((storey / 10) % 10 >= 5) {
                     //올림
-                    ans += 5;
                     storey /= 10;
                     storey++;
                 } else {
                     //버림
-                    ans += 5;
                     storey /= 10;
                 }
-            } else if(mod<5) {  //버림
-                ans += mod;
+            } else if(remainder < 5) {
+                ans += remainder;
                 storey /= 10;
-            } else {    //mod=6-9   //올림
-                ans += 10-mod;
+            } else {
+                ans += 10 - remainder;
                 storey /= 10;
                 storey++;
             }
@@ -28,3 +30,4 @@ class Solution {
         return ans;
     }
 }
+    
