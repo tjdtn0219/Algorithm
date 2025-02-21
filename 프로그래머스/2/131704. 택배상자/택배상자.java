@@ -1,57 +1,71 @@
 import java.util.*;
-import java.io.*;
 
 class Solution {
     
-    int n;
     int[] order;
-    Stack<Integer> stk;
     Queue<Integer> q;
+    Stack<Integer> stk;
+    int ans;
+    int n;
     
     public int solution(int[] order) {
-        
         init(order);
-        return solve();
-        
+        solve();
+        return ans;
     }
     
-    public void init(int[] order) {
-        n = order.length+1;
-        this.order = order;
-        stk = new Stack<>();
-        q = new LinkedList<>();
-    }
-    
-    public int solve() {
+    public void solve() {
         for(int i=1; i<=n; i++) {
             q.add(i);
         }
         
+        // q: 1 2 3 4 5
+        // tg: 4 3 1 2 5
+        // stk: 1 2 3 
         int idx = 0;
         while(!q.isEmpty()) {
-            if(idx >= order.length) break;
-            if(order[idx] == q.peek()) {
-                idx++;
+
+            int nxt = order[idx];
+            // System.out.println("nxt : " + nxt + ", q.peek : " + q.peek() + ", ans : " + ans);
+            // printStk();
+            if(nxt == q.peek()) {
+                // System.out.println("TAG1");
                 q.poll();
-            } else {
-                if(!stk.isEmpty() && stk.peek()==order[idx]) {
-                    idx++;
+                idx++;
+                ans++;
+            } else if (nxt < q.peek()) {
+                // System.out.println("TAG2");
+                boolean flag = false;
+                if(!stk.isEmpty() && nxt == stk.peek()) {
                     stk.pop();
-                    // q.poll();
-                } else {
-                    stk.add(q.poll());
-                    // System.out.println("curIdx : " + idx + " , q.peek() : " + q.peek());
+                    idx++;
+                    ans++;
+                    flag = true;
                 }
+                if(!flag) return ;
+            } else {
+                // System.out.println("TAG3");
+                stk.add(q.poll());
             }
         }
-        int i = idx;
-        // System.out.println();
-        while(!stk.isEmpty() && i<n) {
-            System.out.println(order[i] + " , " + stk.peek());
-            if(order[i]!=stk.peek()) break;
-            idx++; i++;
-            stk.pop();
+        while(!stk.isEmpty() && stk.pop() == order[idx++]) {
+            ans++;
         }
-        return idx;
+    }
+    
+    private void printStk() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("stk : ");
+        for(int num : stk) {
+            sb.append(num).append(" ");
+        }
+        System.out.println(sb);
+    }
+    
+    public void init(int[] order) {
+        this.n = order.length;
+        this.order = order;
+        q = new LinkedList<>();
+        stk = new Stack<>();
     }
 }
