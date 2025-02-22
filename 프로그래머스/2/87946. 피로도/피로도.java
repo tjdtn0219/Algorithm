@@ -2,36 +2,42 @@ import java.util.*;
 
 class Solution {
     
-    public int n;
-    public int[] comb;
-    public boolean[] vis;
-    public int ans = -1;
+    int k;
+    int n;
+    int[][] dungeons;
+    boolean[] vis;
+    int ans;
     
-    public int solution(int cur, int[][] dungeons) {
-        
-        n = dungeons.length;    
-        comb = new int[n];
-        vis = new boolean[n];
-        
-        btk(0, cur, dungeons, 0);
-        
+    public int solution(int k, int[][] dungeons) {
+        init(k, dungeons);
+        solve();
         return ans;
     }
     
-    public void btk(int k, int cur, int[][] dungeons, int cnt) {
-        if(k==n) {
-            ans = Math.max(ans, cnt);
+    public void solve() {
+        dfs(k, 0);
+    }
+    
+    public void dfs(int curK, int dep) {
+        ans = Math.max(ans, dep);
+        if(dep == n) {
             return ;
         }
         
         for(int i=0; i<n; i++) {
             if(vis[i]) continue;
-            
-            comb[k] = i;
-            vis[i] = true;
-            if(cur < dungeons[i][0]) btk(k+1, cur, dungeons, cnt);
-            else btk(k+1, cur-dungeons[i][1], dungeons, cnt+1);
-            vis[i] = false;
+            if(dungeons[i][0] <= curK) {
+                vis[i] = true;
+                dfs(curK - dungeons[i][1], dep+1);
+                vis[i] = false;
+            }
         }
+    }
+    
+    public void init(int k, int[][] dungeons) {
+        this.k = k;
+        this.n = dungeons.length;
+        this.dungeons = dungeons;
+        this.vis = new boolean[n];
     }
 }
