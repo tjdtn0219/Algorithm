@@ -2,77 +2,56 @@ import java.util.*;
 
 class Solution {
     
-    static final int MAX_LEN = 101;
-    
     int n;
-    int[] boxes;
+    int[] cards;
     int[] parents;
-    boolean[] isOpened;
+    int ans;
+    boolean[] vis;
     
     public int solution(int[] cards) {
-        int answer = 0;
         init(cards);
-        // int k = dfs(1, 0);
-        // System.out.println("k : " + k);
-        return solve();
-        // return answer;
+        solve();
+        return ans;
     }
     
-    public void init(int[] cards) {
-        n = cards.length;
-        boxes = new int[n+1];
+    public void solve() {
+        for(int i=0; i<n; i++) {
+            if(vis[cards[i]]) continue;
+            dfs(cards[i]);
+        }
         for(int i=1; i<=n; i++) {
-            boxes[i] = cards[i-1];
+            find(i);
         }
-        parents = new int[MAX_LEN];
-        for(int i=1; i<MAX_LEN; i++) {
-            parents[i] = i;
-        }
-        isOpened = new boolean[n+1];
         
-    }
-    
-    public int solve() {
+        HashMap<Integer, Integer> cntMap = new HashMap<>();
+        for(int i=1; i<=n; i++) {
+            // System.out.println("x : " + i + ", parents[x] : " + parents[i]);
+            cntMap.put(parents[i], cntMap.getOrDefault(parents[i], 0) + 1);
+        }
         PriorityQueue<Integer> pq = new PriorityQueue<>((o1, o2) -> o2 - o1);
-        for(int i=1; i<=n; i++) {
-            if(isOpened[i]) continue;
-            int cnt = dfs(i, 0);
-            // System.out.println("idx : " + i + " k : " + k);
-            // printIsOpened();
-            pq.add(cnt);
+        for(int key : cntMap.keySet()) {
+            // System.out.println("key : " + key + ", val : " + cntMap.get(key));
+            pq.add(cntMap.get(key));
         }
-        // System.out.println("size : " + pq.size());
-        if(pq.size()==1) return 0;
-        else {
-            int n1 = pq.poll();
-            int n2 = pq.poll();
-            System.out.println("n1 : " + n1 + " n2 : " + n2);
-            return n1*n2;
-        }
+        if(pq.size() == 1) ans = 0;
+        else ans = pq.poll() * pq.poll();
     }
     
-    public void printIsOpened() {
-        for(int i=1; i<=n; i++) {
-            System.out.print(isOpened[i] + " ");
+    public void dfs(int cur) {
+        int nxt = cards[cur-1];
+        // System.out.println("curCard : " + cur + ", nxtCard : " + nxt);
+        if(vis[nxt]) {
+            return ;
+        } else {
+            vis[nxt] = true;
+            union(cur, nxt);
+            dfs(nxt);   
         }
-        System.out.println();
-    }
-    
-    public int dfs(int idx, int k) {
-        // System.out.println("card : " + card + " isOpened[card] : " + isOpened[card]);
-        if(isOpened[idx]) {
-            
-            return k;
-        }
-        isOpened[idx] = true;
-        int nxtIdx = boxes[idx];
-        return dfs(nxtIdx, k+1);
-        
     }
     
     public int find(int x) {
         if(parents[x] == x) return x;
-        return parents[x] = find(parents[x]);
+        else return parents[x] = find(parents[x]);
     }
     
     public void union(int u, int v) {
@@ -83,5 +62,15 @@ class Solution {
         } else {
             parents[u] = v;
         }
-    } 
+    }
+    
+    public void init(int[] cards) {
+        this.n = cards.length;
+        this.cards = cards;
+        this.parents = new int[n+1];
+        this.vis = new boolean[n+1];
+        for(int i=0; i<=n; i++) {
+            parents[i] = i;
+        }
+    }
 }
