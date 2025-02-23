@@ -20,27 +20,7 @@ class Solution {
     
     public int solve(String[] place) {
         init(place);
-        // printBoard();
-        // printPeople();
         return isKeepDistance();
-        // return 1;
-    }
-    
-    public void printPeople() {
-        for(Point p : people) {
-            System.out.println("person: " + p.x + ", " + p.y);
-        }        
-    }
-    
-    public void printBoard() {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<N; i++) {
-            for(int j=0; j<N; j++) {
-                sb.append(board[i][j] + " ");
-            }
-            sb.append("\n");
-        }
-        System.out.println(sb);
     }
     
     public void init(String[] place) {
@@ -78,11 +58,6 @@ class Solution {
             int size = q.size();
             for(int i=0; i<size; i++) {
                 Point cur = q.poll();
-                // if(board[cur.x][cur.y] == 1) {
-                //     System.out.println("person : " + person.x + ", " + person.y);
-                //     System.out.println("adj : " + cur.x + ", " + cur.y);
-                //     return true;
-                // }
                 for(int dir=0; dir<4; dir++) {
                     int nx = cur.x + DX[dir];
                     int ny = cur.y + DY[dir];
