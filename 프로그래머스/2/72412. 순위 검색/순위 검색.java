@@ -2,90 +2,42 @@ import java.util.*;
 
 class Solution {
     
-    static final String[] LANGS = {"cpp", "java", "python"};
-    static final String[] POSITIONS = {"backend", "frontend"};
-    static final String[] EXPERIENCES = {"junior", "senior"};
-    static final String[] FOODS = {"chicken", "pizza"};
+    static final String[] LANG = {"java", "python", "cpp"};
+    static final String[] POS = {"backend", "frontend"};
+    static final String[] EXP = {"junior", "senior"};
+    static final String[] FOOD = {"chicken", "pizza"};
     
-    HashMap<String, List<Integer>> scoreMap;
+    HashMap<String, List<Integer>> scoreListMap;
+    int[] answer;
+    List<String> keyList;
     
     public int[] solution(String[] info, String[] query) {
-        init(info);
-        return solve(query);
-    }
-    
-    public void init(String[] infos) {
-        scoreMap = new HashMap<>();
-        makeScoreMap();
-        fillScoreMap(infos);
-        sortScoreMap();
-    }
-    
-    public void makeScoreMap() {
-        for(String lang : LANGS) {
-            for(String position : POSITIONS) {
-                for(String experience : EXPERIENCES) {
-                    for(String food : FOODS) {
-                        scoreMap.put(lang + position + experience + food, new ArrayList<>());
-                    }
-                }
-            }
-        }
-    }
-    
-    public void fillScoreMap(String[] infos) {
-        for(String info : infos) {
-            String[] tmp = info.split(" ");
-            String key = tmp[0] + tmp[1] + tmp[2] + tmp[3];
-            int score = Integer.parseInt(tmp[4]);
-            List<Integer> scoreList = scoreMap.get(key);
-            scoreList.add(score);
-            // System.out.println("key : " + key);
-            // System.out.println("size : " + scoreMap.get(key).size());
-        }
-    }
-    
-    public void sortScoreMap() {
-        for(String key : scoreMap.keySet()) {
-            Collections.sort(scoreMap.get(key));
-        }
-    }
-    
-    public int[] solve(String[] queries) {
-        int[] answer = new int[queries.length];
-        for(int i=0; i<queries.length; i++) {
-            String query = queries[i];
-            answer[i] = makeKeyComb(query);
-        }
+        answer = new int[query.length];
+        initScoreListMap(info);
+        doQuery(query);
         return answer;
     }
     
-    public int makeKeyComb(String query) {
-        List<String> keyList = new ArrayList<>();
-        List<String> infoList = new ArrayList<>();
-        String[] tmp = query.split(" and ");
-        String lang = tmp[0];
-        String position = tmp[1];
-        String experience = tmp[2];
-        String[] tmp2 = tmp[3].split(" ");
-        String food = tmp2[0];
-        int score = Integer.parseInt(tmp2[1]);
-        
-        infoList.add(lang);
-        infoList.add(position);
-        infoList.add(experience);
-        infoList.add(food);
-        // System.out.println("S : " + lang + " " + position + " " + experience + " " + food);
-        dfs(0, "", keyList, infoList);
-        int cnt = 0;
-        for(String key : keyList) {
-            cnt += scoreMap.get(key).size() - lowerBound(key, score);
+
+    public void doQuery(String[] queries) {
+        int idx = 0;
+        for(String query : queries) {
+            String[] tmp = query.split(" and ");
+            int score = Integer.parseInt(tmp[3].split(" ")[1]);
+            tmp[3] = tmp[3].split(" ")[0];
+            // System.out.println("query : " + query);
+            keyList = new ArrayList<>();
+            dfs(tmp, 0, "");
+            int cnt = 0;
+            for(String key : keyList) {
+                cnt += getCnt(key, score);
+            }
+            answer[idx++] = cnt;
         }
-        return cnt;
     }
     
-    public int lowerBound(String key, int target) {
-        List<Integer> scoreList = scoreMap.get(key);
+    public int getCnt(String key, int target) {
+        List<Integer> scoreList = scoreListMap.get(key);
         int st = 0;
         int en = scoreList.size();
         
@@ -94,36 +46,68 @@ class Solution {
             if(target <= scoreList.get(mid)) en = mid;
             else st = mid + 1;
         }
-        return st;
+        return scoreList.size() - st;
     }
     
-    public void dfs(int k, String key, List<String> keyList, List<String> infoList) {
+    public void dfs(String[] tmp, int k, String s) {
         if(k == 4) {
-            keyList.add(key);
-            // System.out.println("key : " + key);
+            keyList.add(s);
+            // System.out.println("key : " + s);
             return ;
         }
         
-        if(!infoList.get(k).equals("-")) {
-            dfs(k+1, key + infoList.get(k), keyList, infoList);
+        if(k==0 && tmp[k].equals("-")) {
+            for(String lang : LANG) {
+                dfs(tmp, k+1, s + lang);
+            }
+        } else if(k==1 && tmp[k].equals("-")) {
+            for(String pos : POS) {
+                dfs(tmp, k+1, s + pos);
+            }
+        } else if(k==2 && tmp[k].equals("-")) {
+            for(String exp : EXP) {
+                dfs(tmp, k+1, s + exp);
+            }
+        } else if(k==3 && tmp[k].equals("-")) {
+            for(String food : FOOD) {
+                dfs(tmp, k+1, s + food);
+            }
         } else {
-            if(k==0) {
-                for(String s : LANGS) {
-                    dfs(k+1, key + s, keyList, infoList);
-                }
-            } else if(k==1) {
-                for(String s : POSITIONS) {
-                    dfs(k+1, key + s, keyList, infoList);
-                }
-            } else if(k==2) {
-                for(String s : EXPERIENCES) {
-                    dfs(k+1, key + s, keyList, infoList);
-                }
-            } else {
-                for(String s : FOODS) {
-                    dfs(k+1, key + s, keyList, infoList);
+            dfs(tmp, k+1, s + tmp[k]);
+        }
+        
+    }
+    
+    public void initScoreListMap(String[] infos) {
+        scoreListMap = new HashMap<>();
+        for(String lang : LANG) {
+            for(String pos : POS) {
+                for(String exp : EXP) {
+                    for(String food : FOOD) {
+                        String key = lang + pos + exp + food;
+                        scoreListMap.put(key, new ArrayList<>());
+                    }
                 }
             }
         }
+        setScoreListMap(infos);
     }
+    
+    public void setScoreListMap(String[] infos) {
+        for(String info : infos) {
+            String[] tmp = info.split(" ");
+            String lang = tmp[0];
+            String pos = tmp[1];
+            String exp = tmp[2];
+            String food = tmp[3];
+            int score = Integer.parseInt(tmp[4]);
+            String key = lang + pos + exp + food;
+            List<Integer> list = scoreListMap.get(key);
+            list.add(score);
+        }
+        for(String key : scoreListMap.keySet()) {
+            Collections.sort(scoreListMap.get(key));
+        }
+    }
+    
 }
