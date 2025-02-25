@@ -1,55 +1,43 @@
 import java.util.*;
 
 class Solution {
+    
     static final int MAX = 100_000;
     
-    String s;
-    
     public int[] solution(String s) {
-        int[] answer = {};
-        init(s);
-        return solve();
-    }
-    
-    public int[] solve() {
-        return parseStr();
-    }
-    
-    public int[] parseStr() {
-        String[] splits = s.substring(2, s.length() - 2).split("\\{");
-        HashMap<Integer, HashSet<Integer>> map = new HashMap<>();
-        int len = 0;
-        for(String tmp : splits) {
-            // System.out.println("tmp : " + tmp);
-            HashSet<Integer> set = getSet(tmp);
-            map.put(set.size(), set);
-            len++;
+        s.substring(2, s.length() - 2);
+        String[] splits = s.split("\\{");
+        HashMap<Integer, HashSet<Integer>> setMap = new HashMap<>();
+        
+        int max = 0;
+        List<Integer> ansList = new ArrayList<>();
+        for(String str : splits) {
+            if(str.length() == 0) continue;
+            HashSet<Integer> set = getSet(str.substring(0, str.length()-2));
+            setMap.put(set.size(), set);
+            max++;
         }
         
         boolean[] vis = new boolean[MAX+1];
-        List<Integer> ansList = new ArrayList<>();
-        for(int i=1; i<=len; i++) {
-            for(int num : map.get(i)) {
-                // System.out.println("i : " + i + ", num : " + num);
+        for(int i=1; i<=max; i++) {
+            HashSet<Integer> set = setMap.get(i);
+            for(int num : set) {
                 if(vis[num]) continue;
-                vis[num] = true;
                 ansList.add(num);
+                vis[num] = true;
             }
         }
+        
         return ansList.stream().mapToInt(Integer::intValue).toArray();
     }
     
-    public HashSet<Integer> getSet(String str) {
+    public HashSet<Integer> getSet(String s) {
+        // System.out.println("s : " + s);
         HashSet<Integer> set = new HashSet<>();
-        String[] splits = str.split(",|\\}");
-        for(String s : splits) {
-            // System.out.println("tmp2 : " + s);
-            set.add(Integer.parseInt(s));
+        String[] splits = s.split(",");
+        for(String num : splits) {
+            set.add(Integer.parseInt(num));
         }
         return set;
-    }
-    
-    public void init(String s) {
-        this.s = s;
     }
 }
