@@ -1,40 +1,57 @@
 import java.util.*;
 
 class Solution {
+    
+    Queue<Character> skill;
+    String[] skillTrees;
+    int ans;
+    
     public int solution(String skill, String[] skill_trees) {
-        int answer = -1;
-        
-        HashMap<Character, Integer> hmap = new HashMap<>();
-        for(int i=0; i<skill.length(); i++) {
-            char c = skill.charAt(i);
-            hmap.put(c, i);
-        }
-       
-        int ans = 0;
-        for(String str : skill_trees) {
-            boolean flag = true;
-            int idx = 0;
-            for(int i=0; i<str.length(); i++) {
-                char c = str.charAt(i);
-                // System.out.println("c : " + c + " , idx : " + idx);
-                if(hmap.containsKey(c)) {
-                    if(hmap.get(c)!=idx) {
-                        flag=false;
-                        break;
-                    } else {
-                        idx++;
-                    }
-                }
-            }
-            if(flag) {
+        init(skill, skill_trees);
+        solve();
+        return ans;
+    }
+    
+    public void solve() {
+        // Queue<Character> q = new LinkedList<>(skill);
+        // q.poll();
+        // System.out.println("q.size() : " + q.size());
+        // System.out.println("skill.size() : " + skill.size());
+        for(String skillTree : skillTrees) {
+            if(isPossible(skillTree)) {
+                System.out.println("okay : " + skillTree);
                 ans++;
-                // System.out.println(str);
             }
-            // System.out.println("============");
         }
-        
-        answer = ans;
-        return answer;
-        
+    }
+    
+    public boolean isPossible(String skillTree) {
+        Queue<Character> q = new LinkedList<>(skill);
+        HashSet<Character> set = new HashSet<>(skill);
+        // System.out.println("q.size() : " + q.size());
+        // System.out.println("set.size() : " + set.size());
+        int cnt = 0;
+        for(char c : skillTree.toCharArray()) {
+            if(q.isEmpty()) break;
+            if(set.contains(c)) {
+                cnt++;
+            }
+            if(c == q.peek()) {
+                q.poll();
+            }
+        }
+        if(cnt + q.size() == skill.size()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public void init(String skill, String[] skill_trees) {
+        this.skill = new LinkedList<>();
+        for(char c : skill.toCharArray()) {
+            this.skill.add(c);
+        }
+        this.skillTrees = skill_trees;
     }
 }
