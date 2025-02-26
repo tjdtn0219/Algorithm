@@ -2,69 +2,62 @@ import java.util.*;
 
 class Solution {
     
-    String s;
     int n;
     
     public int solution(String s) {
-        init(s);
-        return solve();
-    }
-    
-    public int solve() {
-        if(n == 1) return 1;
-        int ans = Integer.MAX_VALUE;
+        n = s.length();
+        int ans = n;
         for(int len=1; len<=n/2; len++) {
-            ans = Math.min(ans, getCompressedLen(len));
+            String encoded = encode(s, len);
+            ans = Math.min(ans, encoded.length());
+            // System.out.println("len : " + len + ", encoded : " + encoded);
         }
+        
         return ans;
     }
     
-    public int getCompressedLen(int len) {
+    public String encode(String s, int len) {
         int st = 0;
-        String last = "";
-        int cnt = 1;
-        int res = n;
-        boolean flag = false;
+        int en = st + len - 1;
+        StringBuilder sb = new StringBuilder();
+        Stack<String> stk = new Stack<>();
         while(st < n) {
-            String sub = s.substring(st, Math.min(st + len, n));
-            if(last.equals(sub)) {
-                if(!flag) {
-                    // 첫 연속
-                    res -= len;
-                    cnt = 2;
-                    flag = true;
-                } else {
-                    res -= len;
-                    cnt++;
-                }
+            String str = "";
+            if(en < n) {
+                str = s.substring(st, en+1);    
             } else {
-                if(cnt > 1) {
-                    res += getDigitNum(cnt);
+                str = s.substring(st);
+            }
+            if(stk.isEmpty()) {
+                stk.push(str);
+            } else {
+                if(stk.peek().equals(str)) {
+                    stk.push(str);
+                } else {
+                    if(stk.size() > 1) {
+                        sb.append(stk.size()).append(stk.pop());
+                        while(!stk.isEmpty()) {
+                            stk.pop();
+                        }
+                    } else {
+                        sb.append(stk.pop());
+                    }
+                    stk.push(str);
                 }
-                cnt = 1;
-                last = sub;
-                flag = false;
             }
             st += len;
+            en += len;
         }
-        if(cnt > 1) {
-            res += getDigitNum(cnt);
+        
+        if(stk.size() > 1) {
+            sb.append(stk.size()).append(stk.pop());
+            while(!stk.isEmpty()) {
+                stk.pop();
+            }
+        } else {
+            sb.append(stk.pop());
         }
-        return res;
-    }    
-    
-    public int getDigitNum(int num) {
-        int cnt = 0;
-        while(num > 0) {
-            num /= 10;
-            cnt++;
-        }
-        return cnt;
-    }
-    
-    public void init(String s) {
-        this.n = s.length();
-        this.s = s;
+        return sb.toString();
     }
     
 }
