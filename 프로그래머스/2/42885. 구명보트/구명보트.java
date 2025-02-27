@@ -1,33 +1,42 @@
 import java.util.*;
 
 class Solution {
-    public int solution(int[] arr, int limit) {
-        int ans = 0;
-        
-        ArrayList<Integer> list = new ArrayList<>();
-        for(int w : arr) {
-            list.add(w);
-        }
-        Collections.sort(list);
-        
-        int left = 0;
-        int right = list.size() - 1;
-        
-        //10 20 30 70 95 /// LMT = 100
-        
+    
+    int n;
+    int[] people;
+    int limit;
+    int ans;
+    
+    public int solution(int[] people, int limit) {
+        init(people, limit);
+        solve();
+        return ans;
+    }
+    
+    public void solve() {
         int sum = 0;
+        int left = 0;
+        int right = n-1;
+        
         while(left <= right) {
-            sum = list.get(left) + list.get(right);
+            sum = people[left] + people[right];
             if(sum > limit) {
                 ans++;
                 right--;
             } else {
                 ans++;
-                left++; right--;
+                left++;
+                right--;
             }
         }
-        
-        
-        return ans;
+    }
+    
+    //10 20 30 70 95 /// LMT = 100
+
+    public void init(int[] people, int limit) {
+        this.n = people.length;
+        this.people = people;
+        this.limit = limit;
+        Arrays.sort(people);
     }
 }
