@@ -1,39 +1,32 @@
 import java.util.*;
 
 class Node {
-    int price;
     int idx;
-    public Node(int price, int idx) {
-        this.price = price;
+    int val;
+    public Node(int idx, int val) {
         this.idx = idx;
+        this.val = val;
     }
 }
 
 class Solution {
-    
-    int n;
-    int[] prices;
-    
     public int[] solution(int[] prices) {
-        int[] answer = {};
-        init(prices);
-        return solve();
-    }
-    
-    public int[] solve() {
+        int n = prices.length;
         int[] answer = new int[n];
+        
         Stack<Node> stk = new Stack<>();
+        // stk.add(new Node(0, prices[0]));
+        
         for(int i=0; i<n; i++) {
-            int price = prices[i];
-            if(stk.isEmpty()) {
-                stk.push(new Node(price, i));
-            } else {
-                while(!stk.isEmpty() && stk.peek().price > price) {
-                    Node popped = stk.pop();
-                    answer[popped.idx] = i - popped.idx;
+            while(!stk.isEmpty()) {
+                if(prices[i] < stk.peek().val) {
+                    answer[stk.peek().idx] = i - stk.peek().idx;
+                    stk.pop();
+                } else {
+                    break;
                 }
-                stk.push(new Node(price, i));
             }
+            stk.push(new Node(i, prices[i]));
         }
         
         while(!stk.isEmpty()) {
@@ -42,10 +35,5 @@ class Solution {
         }
         
         return answer;
-    }
-    
-    public void init(int[] prices) {
-        this.n = prices.length;
-        this.prices = prices;
     }
 }
