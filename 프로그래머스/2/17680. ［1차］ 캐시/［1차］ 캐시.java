@@ -1,8 +1,17 @@
 import java.util.*;
 
+class City {
+    int idx;
+    String name;
+    public City(int idx, String name) {
+        this.idx = idx;
+        this.name = name;
+    }
+}
+
 class Solution {
     
-    int size;
+    int max;
     String[] cities;
     int ans;
     
@@ -12,49 +21,59 @@ class Solution {
         return ans;
     }
     
+    private void printCache(HashMap<String, Integer> cache) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("size : " +  cache.keySet().size());
+        for(String city : cache.keySet()) {
+            sb.append(" ").append(city);
+        }
+        System.out.println(sb);
+    }
+    
     public void solve() {
-        if(size == 0) {
+        if(max == 0) {
             ans = cities.length * 5;
             return ;
         }
-        LinkedList<String> list = new LinkedList<>();
-        HashSet<String> set = new HashSet<>();
+        HashMap<String, Integer> cache = new HashMap<>();
+        int idx = 0;
         for(String city : cities) {
-            if(set.contains(city)) {
-                // Cache Hit
+            if(cache.keySet().contains(city)) {
+                // cache Hit
                 ans += 1;
-                int removeIdx = -1;
-                for(int i=0; i<list.size(); i++) {
-                    if(city.equals(list.get(i))) {
-                        removeIdx = i;
-                        break;
-                    }
-                }
-                list.addFirst(list.remove(removeIdx));
+                cache.put(city, idx);
             } else {
-                // Cache Miss
-                ans += 5;
-                if(set.size() < size) {
-                    // 포화 X
-                    set.add(city);
-                    list.addFirst(city);
+                // cache Miss
+                if(cache.keySet().size() < max) {
+                    cache.put(city, idx);
+                    ans += 5;
                 } else {
-                    // 포화 O
-                    String removedCity = list.pollLast();
-                    set.remove(removedCity);
-                    set.add(city);
-                    list.addFirst(city);
+                    String removeCity = "";
+                    int minIdx = Integer.MAX_VALUE;
+                    for(String name : cache.keySet()) {
+                        if(cache.get(name) < minIdx) {
+                            minIdx = cache.get(name);
+                            removeCity = name;
+                        }
+                    }
+                    cache.remove(removeCity);
+                    cache.put(city, idx);
+                    ans += 5;
                 }
                 
             }
+            // printCache(cache);
+            // System.out.println("ans : " + ans);
+            idx++;
         }
     }
     
     public void init(int cacheSize, String[] cities) {
-        this.size = cacheSize;
+        this.max = cacheSize;
+        this.cities = cities;
         this.cities = new String[cities.length];
         for(int i=0; i<cities.length; i++) {
-            this.cities[i] = cities[i].toLowerCase();
+            this.cities[i] = cities[i].toUpperCase();
         }
     }
 }
