@@ -10,6 +10,7 @@ class Solution {
     int[] lionInfo;
     int maxDiff;
     int[] answer;
+    HashMap<Integer, List<int[]>> answerMap;
     
     public int[] solution(int n, int[] info) {
         
@@ -28,14 +29,25 @@ class Solution {
         lionInfo = new int[TARGET_CNT];
         maxDiff = 0;
         answer = new int[TARGET_CNT];
+        answerMap = new HashMap<>();
     }
     
     public void solve() {
         dfs(0, 0);
-        if(maxDiff == 0) {
+        List<int[]> list = answerMap.getOrDefault(maxDiff, new ArrayList<>());
+        if(list.size() == 0) {
             answer = new int[1];
             answer[0] = -1;
+        } else {
+            Collections.sort(list, (o1, o2) -> {
+               for(int i=TARGET_CNT-1; i>=0; i--) {
+                   if(o1[i] != o2[i]) return o2[i] - o1[i];
+               }
+                return 0;
+            });
+            answer = list.get(0);
         }
+        
         System.out.println("maxDiff : " + maxDiff);
     }
     
@@ -47,18 +59,20 @@ class Solution {
             if(apeachScore < lionScore) {
                 int diff = lionScore - apeachScore;
                 if(diff >= maxDiff) {
-                    answer = lionInfo.clone();
+                    List<int[]> list = answerMap.getOrDefault(diff, new ArrayList<>());
+                    list.add(lionInfo.clone());
+                    answerMap.put(diff, list);
                     maxDiff = diff;
                 }
             }
             return ;
         }
         
-        for(int i=0; i<TARGET_CNT && lionInfo[i] <= apeachInfo[i]; i++) {
-            // if(lionInfo[i] + 1 > scoreLimit[i]) continue;
-            lionInfo[i]++;
-            dfs(k+1, i);
-            lionInfo[i]--;
+        for(int i=start; i<TARGET_CNT; i++) {
+            if(apeachInfo[i] < lionInfo[i]) continue;
+                lionInfo[i]++;
+                dfs(k+1, i);
+                lionInfo[i]--;
         }
         
     }
@@ -80,12 +94,5 @@ class Solution {
         return scores;
     }
     
-    public void printScore(int[] score) {
-        for(int num : score) {
-            System.out.print(num + " ");
-        }
-        System.out.println();
-    }
+ 
 }
-
-
