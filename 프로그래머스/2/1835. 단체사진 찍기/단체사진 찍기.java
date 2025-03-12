@@ -1,15 +1,27 @@
 import java.util.*;
 
+class Operation {
+    char a;
+    char b;
+    char op;
+    int num;
+    
+    public Operation(char a, char b, char op, int num) {
+        this.a = a;
+        this.b = b;
+        this.op = op;
+        this.num = num;
+    }
+}
+
 class Solution {
     
-    static final int N = 8;
-    static final char[] FRIENDS = {'A', 'C', 'F', 'J', 'M', 'N', 'R', 'T'};
-    static int cnt = 0;
+    public static final char[] FRIENDS = {'A', 'C', 'F', 'J', 'M', 'N', 'R', 'T'};
+    public static final int N = 8;
     
     int n;
-    String[] data;
-    HashMap<Character, Integer> posMap;
-    boolean[] vis;
+    List<Operation> opList;
+    char[] comb;
     int ans;
     
     public int solution(int n, String[] data) {
@@ -19,53 +31,12 @@ class Solution {
     }
     
     public void solve() {
-        dfs(0);
+        makeComb(0, new boolean[N]);
     }
     
-    public void print() {
-        StringBuilder sb = new StringBuilder();
-        for(char c : FRIENDS) {
-            sb.append(c).append(" : ").append(posMap.get(c)).append("\n");
-        }
-        System.out.println(sb);
-    }
-    
-    public void dfs(int k) {
+    public void makeComb(int k, boolean[] vis) {
         if(k == N) {
-            // if(cnt <= 100) {
-            //     print();
-            //     cnt++;
-            // }          
-            boolean flag = true;
-            for(String cond : data) {
-                char a = cond.charAt(0);
-                char b = cond.charAt(2);
-                char op = cond.charAt(3);
-                int val = cond.charAt(4) - '0';
-                int dis = Math.abs(posMap.get(a) - posMap.get(b)) - 1;
-                if(op == '=') {
-                    if(dis != val) {
-                        // if(cnt <= 100) {
-                        //     System.out.println("a : " + a + ", b : " + b + ", op : " + op + ", dis : " + dis + ", val : " + val);
-                        //     cnt++;
-                        // }
-                        
-                        flag = false;
-                        break;
-                    }
-                } else if(op == '>') {
-                    if(dis <= val) {
-                        flag = false;
-                        break;
-                    }
-                } else if(op == '<') {
-                    if(dis >= val) {
-                        flag = false;
-                        break;
-                    }
-                }
-            }
-            if(flag) {
+            if(isOkay()) {
                 ans++;
             }
             return ;
@@ -74,17 +45,45 @@ class Solution {
         for(int i=0; i<N; i++) {
             if(vis[i]) continue;
             vis[i] = true;
-            posMap.put(FRIENDS[i], k);
-            dfs(k+1);
+            comb[k] = FRIENDS[i];
+            makeComb(k+1, vis);
             vis[i] = false;
         }
     }
     
-    public void init(int n, String[] data) {
+    public boolean isOkay() {
+        HashMap<Character, Integer> posMap = new HashMap<>();
+        for(int i=0; i<N; i++) {
+            posMap.put(comb[i], i);
+        }
+        for(Operation operation : opList) {
+            char a = operation.a;
+            char b = operation.b;
+            char op = operation.op;
+            int num = operation.num;
+            
+            int dis = Math.abs(posMap.get(a) - posMap.get(b)) - 1;
+            if(op == '<' && dis >= num) {
+                return false;
+            } else if(op == '>' && dis <= num) {
+                return false;
+            } else if(op == '=' && dis != num) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public void init(int n, String[] datas) {
+        this.opList = new ArrayList<>();
         this.n = n;
-        this.data = data;
-        this.posMap = new HashMap<>();
-        this.vis = new boolean[N];
-        this.ans = 0;
+        this.comb = new char[N];
+        for(String data : datas) {
+            char a = data.charAt(0);
+            char b = data.charAt(2);
+            char op = data.charAt(3);
+            int num = data.charAt(4) - '0';
+            opList.add(new Operation(a, b, op, num));
+        }
     }
 }
