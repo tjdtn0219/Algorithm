@@ -2,89 +2,84 @@ import java.util.*;
 
 class Pair {
     int join;
-    int sum;
-    public Pair(int join, int sum) {
+    int amount;
+    public Pair(int join, int amount) {
         this.join = join;
-        this.sum = sum;
+        this.amount = amount;
     }
 }
 
 class Solution {
     
     static final int[] SALES = {10, 20, 30, 40};
-    static final double[] DISCOUNTS = {0.9, 0.8, 0.7, 0.6};
     
-    int n, m;
     int[][] users;
-    int[] emoticons;
+    int[] emoticonCosts;
+    int[] answer;
+    int n;
+    int[] comb;
     PriorityQueue<Pair> pq;
-    int[] ans;
     
     public int[] solution(int[][] users, int[] emoticons) {
         init(users, emoticons);
         solve();
-        return ans;
+        return answer;
     }
     
     public void solve() {
-        dfs(0, new int[m]);
-        ans[0] = pq.peek().join;
-        ans[1] = pq.peek().sum;
+        dfs(0);
+        Pair polled = pq.poll();
+        answer[0] = polled.join;
+        answer[1] = polled.amount;
     }
     
-    public void printArr(int[] arr) {
-        StringBuilder sb = new StringBuilder();
-        for(int num : arr) {
-            sb.append(SALES[num]).append(" ");
-        }
-        System.out.println("Comb : " + sb);
-    }
-    
-    public void dfs(int k, int[] comb) {
-        if(k == m) {
-            int joinNum = 0;
-            int totalSum = 0;
-            // printArr(comb);
-            for(int[] user : users) {
-                int sum = 0;
-                for(int i=0; i<m; i++) {
-                    // System.out.println("SALE : " + SALES[comb[i]] + ", USER : " + user[0]);
-                    if(SALES[comb[i]] < user[0]) continue;
-                    // 구매
-                    sum += emoticons[i] * DISCOUNTS[comb[i]];
-                }
-                // System.out.println("sum : " + sum);
-                if(sum >= user[1]) {
-                    //플러스 가입
-                    joinNum++;
-                } else {
-                    //이모티콘 구입
-                    totalSum += sum;
-                }
-            }
-            pq.add(new Pair(joinNum, totalSum));
-            // System.out.println("join : " + joinNum + ", totalSum : " + totalSum);
+    public void dfs(int k) {
+        if(k == n) {
+            purchaseEmoticons();
             return ;
         }
         
-        for(int i=0; i<4; i++) {
-            comb[k] = i;
-            dfs(k+1, comb);
+        for(int sale : SALES) {
+            comb[k] = sale;
+            dfs(k+1);
         }
-        
+    }
+    
+    public void purchaseEmoticons() {
+        int join = 0;
+        int amount = 0;
+        for(int[] user : users) {
+            int minPercent = user[0];
+            int limitAmount = user[1];
+            int totalAmount = 0;
+            for(int i=0; i<n; i++) {
+                if(comb[i] >= minPercent) {
+                    int saledPrice = emoticonCosts[i] * (100 - comb[i]) / 100;
+                    totalAmount += saledPrice;
+                }
+            }
+            if(totalAmount >= limitAmount) {
+                join++;
+            } else {
+                amount += totalAmount;
+            }
+        }
+        // System.out.println("join : " + join + ", amount : " + amount);
+        pq.add(new Pair(join, amount));
     }
     
     public void init(int[][] users, int[] emoticons) {
         this.users = users;
-        this.emoticons = emoticons;
-        this.n = users.length;
-        this.m = emoticons.length;
+        this.emoticonCosts = emoticons;
+        this.answer = new int[2];
+        this.n = emoticons.length;
+        this.comb = new int[n];
         this.pq = new PriorityQueue<>((o1, o2) -> {
             if(o1.join == o2.join) {
-                return o2.sum - o1.sum;
+                return o2.amount - o1.amount;
+            } else {
+                return o2.join - o1.join;
             }
-            return o2.join - o1.join;
         });
-        this.ans = new int[2];
     }
 }
