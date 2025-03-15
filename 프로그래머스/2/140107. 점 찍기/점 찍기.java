@@ -1,28 +1,32 @@
 import java.util.*;
 
 class Solution {
-    
-    long ans;
-    int k, d;
-    
     public long solution(int k, int d) {
-        init(k, d);
-        solve();
-        return ans;
-    }
-    
-    public void solve() {
-        for(int y=0; y<=d; y+=k) {
-            int maxX = (int) Math.sqrt(Math.pow(d, 2) - Math.pow(y, 2));
-            // System.out.println("maxX : " + maxX + ", y : " + y);
-            long cnt = maxX / k + 1;
-            // System.out.println("cnt : " + cnt);
-            ans += cnt;
+        long answer = 0;
+        
+        for(int x=0; x<=d; x+=k) {
+            long tg = (long)d*d - (long)x*x;
+            // System.out.println(Math.sqrt(d*d - x*x));
+            long maxX = bSearch(tg, d);
+            answer += (long) (maxX / k) + 1;
         }
+        
+        return answer;
     }
     
-    public void init(int k, int d) {
-        this.k = k;
-        this.d = d;
+    public long bSearch(long tg, int d) {
+        long st = 0;
+        long en = d;
+        long res = 0;
+        while(st <= en) {
+            long mid = (st + en) / 2;
+            if(tg < mid*mid) {
+                en = mid -1;
+            } else {
+                st = mid + 1;
+                res = Math.max(res, mid);
+            }
+        }
+        return res;
     }
 }
