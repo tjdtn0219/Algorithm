@@ -1,99 +1,111 @@
+import java.awt.*; //Point는 이거 쓰기!!
 import java.util.*;
+import java.util.List;
 
-class Solution {
-    
-    public int solution(int[][] board) {
-        int answer = 0;
-        Queue<Robot> q = new LinkedList<>();
-        int[] dr = {0, 0, 1, -1};
-        int[] dc = {1, -1, 0, 0};
-        
-        int len = board.length;
-        boolean[][][] visited = new boolean[len][len][2];
-        
-        q.add(new Robot(new Point(0, 0), new Point(0, 1), 0, 0));
-        
-        while(!q.isEmpty()){
-            Robot ro = q.poll();
-            
-            //범위를 벗어나는 경우
-            if(ro.p1.r<0 || ro.p1.c<0 || ro.p1.r>=len || ro.p1.c>=len || 
-            ro.p2.r<0 || ro.p2.c<0 || ro.p2.r>=len || ro.p2.c>=len) continue;
-        
-            //벽인 경우
-            if(board[ro.p1.r][ro.p1.c]==1 || board[ro.p2.r][ro.p2.c]==1) continue;
-            
-            //이미 방문한 경우
-            if(visited[ro.p1.r][ro.p1.c][ro.vertical] && visited[ro.p2.r][ro.p2.c][ro.vertical]) continue;
-            
-            //종료 조건
-            if((ro.p1.r==len-1 && ro.p1.c==len-1) || 
-              (ro.p2.r==len-1 && ro.p2.c==len-1)) {
-                answer = ro.t;
-                break;
-            }
-            
-            visited[ro.p1.r][ro.p1.c][ro.vertical] = true;
-            visited[ro.p2.r][ro.p2.c][ro.vertical] = true;
+class Robot {
+    Point p1, p2;
+    int d;
 
-            
-            for(int i = 0; i < 4; i++){
-                int nr1 = ro.p1.r+dr[i];
-                int nr2 = ro.p2.r+dr[i];
-                int nc1 = ro.p1.c+dc[i];
-                int nc2 = ro.p2.c+dc[i];
-        
-                q.add(new Robot(new Point(nr1, nc1), new Point(nr2, nc2), ro.t+1, ro.vertical));
-            }
-            
-            //회전시키기
-            if(ro.vertical==1){
-                //수직인 경우, 좌우 2칸 확인
-                if(ro.p1.c-1>=0 && board[ro.p1.r][ro.p1.c-1]==0 && board[ro.p2.r][ro.p2.c-1]==0){
-                    q.add(new Robot(new Point(ro.p1.r, ro.p1.c), new Point(ro.p1.r, ro.p2.c-1), ro.t+1, 0));
-                    q.add(new Robot(new Point(ro.p2.r, ro.p1.c-1), new Point(ro.p2.r, ro.p2.c), ro.t+1, 0));
-                }
-                if(ro.p1.c+1<len && board[ro.p1.r][ro.p1.c+1]==0 && board[ro.p2.r][ro.p2.c+1]==0){
-                    q.add(new Robot(new Point(ro.p1.r, ro.p1.c), new Point(ro.p1.r, ro.p2.c+1), ro.t+1, 0));
-                    q.add(new Robot(new Point(ro.p2.r, ro.p1.c+1), new Point(ro.p2.r, ro.p2.c), ro.t+1, 0));
-                }
-            }
-            else{
-                //수평인 경우, 상하 2칸 확인
-                if(ro.p1.r-1>=0 && board[ro.p1.r-1][ro.p1.c]==0 && board[ro.p2.r-1][ro.p2.c]==0){
-                    q.add(new Robot(new Point(ro.p1.r-1, ro.p2.c), new Point(ro.p2.r, ro.p2.c), ro.t+1, 1));
-                    q.add(new Robot(new Point(ro.p1.r, ro.p1.c), new Point(ro.p2.r-1, ro.p1.c), ro.t+1, 1));
-                    
-                }
-                if(ro.p1.r+1<len && board[ro.p1.r+1][ro.p1.c]==0 && board[ro.p2.r+1][ro.p2.c]==0){
-                    q.add(new Robot(new Point(ro.p1.r+1, ro.p2.c), new Point(ro.p2.r, ro.p2.c), ro.t+1, 1));   
-                    q.add(new Robot(new Point(ro.p1.r, ro.p1.c), new Point(ro.p2.r+1, ro.p1.c), ro.t+1, 1));   
-                }
-            }
-            
-        }
- 
-        return answer;
+    Robot(Point p1, Point p2, int d) {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.d = d;
     }
     
-    class Robot{
-        Point p1; 
-        Point p2;
-        int t;
-        int vertical;
-        Robot(Point p1, Point p2, int t, int vertical){
-            this.p1 = p1;
-            this.p2 = p2;
-            this.t = t;
-            this.vertical = vertical;
-        }
+    @Override
+    public boolean equals(Object o) {
+        Robot robot = (Robot) o;
+        return (p1.equals(robot.p1) && p2.equals(robot.p2)) || (p1.equals(robot.p2) && p2.equals(robot.p1));
     }
     
-    class Point{
-        int r, c;
-        Point(int r, int c){
-            this.r = r;
-            this.c = c;
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(p1, p2);
     }
 }
+
+class Solution {
+    int N, ans;
+    int[] dy = {-1, 0, 1, 0}, dx = {0, 1, 0, -1};
+    int[][] map;
+    Set<Robot> set = new HashSet<>();
+
+    public int solution(int[][] board) {
+        HashSet<Point> tmp = new HashSet<>();
+        tmp.add(new Point(1,0));
+        tmp.add(new Point(1,0));
+        tmp.add(new Point(1,0));
+        tmp.add(new Point(1,0));
+        tmp.add(new Point(2,0));
+        System.out.println("Test : " + tmp.size());
+        
+        N = board.length;
+        map = new int[N + 2][N + 2];
+        for(int i = 0; i <= N + 1; i++)
+            Arrays.fill(map[i], 1);
+
+        for(int i = 1; i <= N; i++)
+            for(int j = 1; j <= N; j++)
+                map[i][j] = board[i - 1][j - 1];
+
+        Point E = new Point(N, N);
+        Queue<Robot> q = new LinkedList<>();
+        Robot S = new Robot(new Point(1, 1) ,new Point(2, 1), 0);
+        q.add(S);
+        set.add(S);
+
+        while(!q.isEmpty()) {
+            Robot cur = q.poll();
+
+            if(cur.p1.equals(E) || cur.p2.equals(E)) {
+                ans = cur.d;
+                break;
+            }
+
+            for(Robot next : getNext(cur)) {
+                if(!set.contains(next)) {
+                    set.add(next);
+                    q.add(next);
+                }
+            }
+        }
+
+        return ans;
+    }
+
+    public List<Robot> getNext(Robot cur) {
+        Point p1 = cur.p1, p2 = cur.p2;
+        List<Robot> next = new ArrayList<>();
+        // 4방향
+        for(int d = 0; d < 4; d++) {
+            Point np1 = new Point(p1.x + dx[d], p1.y + dy[d]);
+            Point np2 = new Point(p2.x + dx[d], p2.y + dy[d]);
+
+            if(map[np1.y][np1.x] == 1 || map[np2.y][np2.x] == 1)
+                continue;
+            next.add(new Robot(np1, np2, cur.d + 1));
+        }
+
+        // 가로 -> 세로
+        int[] ud = {-1, 1};
+        if(p1.y == p2.y) {
+            for (int d : ud) {
+                if (map[p1.y + d][p1.x] == 0 && map[p2.y + d][p2.x] == 0) {
+                    next.add(new Robot(new Point(p1.x, p1.y + d), p1, cur.d + 1));
+                    next.add(new Robot(new Point(p2.x, p2.y + d), p2, cur.d + 1));
+                }
+            }
+        } else { // 세로 -> 가로
+            for(int d : ud) {
+                if(map[p1.y][p1.x + d] == 0 && map[p2.y][p2.x + d] == 0) {
+                    next.add(new Robot(new Point(p1.x + d, p1.y), p1, cur.d + 1));
+                    next.add(new Robot(new Point(p2.x + d, p2.y), p2, cur.d + 1));
+                }
+            }
+        }
+
+        return next;
+    }
+}
+
+
