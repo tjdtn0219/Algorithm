@@ -1,48 +1,65 @@
 import java.util.*;
 
-class Solution {
-    public int solution(int[] priorities, int location) {
-        int answer = 0;
-        
-        int n = priorities.length;
-        
-        boolean[] vis = new boolean[n];
-        PriorityQueue<Pair> pq = new PriorityQueue<>((o1,o2)->o2.prior-o1.prior);
-        Queue<Pair> q = new LinkedList<>();
-        for(int i=0; i<n; i++) {
-            q.add(new Pair(i, priorities[i]));
-            pq.add(new Pair(i, priorities[i]));
-        }
-        
-        int ans = 1;
-        while(!q.isEmpty()) {
-            Pair poll = q.poll();
-            if(poll.prior < pq.peek().prior) {
-                int highPrior = pq.poll().prior;
-                q.add(poll);
-                while(q.peek().prior!=highPrior) {
-                    q.add(q.poll());
-                }
-                poll = q.poll();
-                // if(q.poll().idx==location) break;
-            } else {
-                pq.poll();
-            }
-            System.out.println(poll.idx);
-            if(poll.idx == location) break;
-            ans++;
-        }
-        
-        
-        return ans;
+class Process {
+    int idx;
+    int priority;
+    public Process(int idx, int priority) {
+        this.idx = idx;
+        this.priority = priority;
     }
 }
 
-class Pair {
-    int idx;
-    int prior;
-    public Pair(int idx, int prior) {
-        this.idx = idx;
-        this.prior = prior;
+class Solution {
+    
+    int answer;
+    Queue<Process> q;
+    PriorityQueue<Process> pq;
+    int location;
+    
+    public int solution(int[] priorities, int location) {
+        init(priorities, location);
+        solve();
+        return answer;
+    }
+    
+    public void solve() {
+        while(!q.isEmpty()) {
+            Process prior = pq.poll();
+            System.out.println("priorIdx : " + prior.idx);
+            while(q.peek().priority != prior.priority) {
+                q.add(q.poll());
+            }
+            // System.out.println("curIdx : " + q.peek().idx);
+            // printQ();
+            answer++;
+            if(location == q.poll().idx) {
+                return ;
+            }
+        }
+    }
+    
+    public void printQ() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("q : [");
+        for(Process p : q) {
+            sb.append(p.idx + ", ");
+        }
+        sb.append("]");
+        System.out.println(sb);
+    }
+    
+    public void init(int[] priorities, int location) {
+        this.q = new LinkedList<>();
+        this.pq = new PriorityQueue<>((o1, o2) -> {
+            if(o1.priority == o2.priority) {
+                return o1.idx - o2.idx;
+            }
+            return o2.priority - o1.priority;
+        });
+        this.location = location;
+        for(int i=0; i<priorities.length; i++) {
+            q.add(new Process(i, priorities[i]));
+            pq.add(new Process(i, priorities[i]));
+        }
     }
 }
