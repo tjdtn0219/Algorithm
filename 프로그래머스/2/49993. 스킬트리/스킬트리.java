@@ -2,56 +2,44 @@ import java.util.*;
 
 class Solution {
     
-    Queue<Character> skill;
+    int answer;
+    HashMap<Character, Integer> skillMap;
     String[] skillTrees;
-    int ans;
     
     public int solution(String skill, String[] skill_trees) {
         init(skill, skill_trees);
         solve();
-        return ans;
+        return answer;
     }
     
     public void solve() {
-        // Queue<Character> q = new LinkedList<>(skill);
-        // q.poll();
-        // System.out.println("q.size() : " + q.size());
-        // System.out.println("skill.size() : " + skill.size());
         for(String skillTree : skillTrees) {
-            if(isPossible(skillTree)) {
-                System.out.println("okay : " + skillTree);
-                ans++;
+            if(isOkay(skillTree)) {
+                // System.out.println(skillTree);
+                answer++;
             }
         }
     }
     
-    public boolean isPossible(String skillTree) {
-        Queue<Character> q = new LinkedList<>(skill);
-        HashSet<Character> set = new HashSet<>(skill);
-        // System.out.println("q.size() : " + q.size());
-        // System.out.println("set.size() : " + set.size());
-        int cnt = 0;
-        for(char c : skillTree.toCharArray()) {
-            if(q.isEmpty()) break;
-            if(set.contains(c)) {
-                cnt++;
-            }
-            if(c == q.peek()) {
-                q.poll();
+    public boolean isOkay(String s) {
+        int pre = -1;
+        for(char c : s.toCharArray()) {
+            Integer idx = skillMap.get(c);
+            if(idx == null) continue;
+            if(idx == pre+1) {
+                pre = idx;
+            } else {
+                return false;
             }
         }
-        if(cnt + q.size() == skill.size()) {
-            return true;
-        } else {
-            return false;
-        }
+        return true;
     }
     
-    public void init(String skill, String[] skill_trees) {
-        this.skill = new LinkedList<>();
-        for(char c : skill.toCharArray()) {
-            this.skill.add(c);
+    public void init(String skill, String[] skillTrees) {
+        this.skillMap = new HashMap<>();
+        this.skillTrees = skillTrees;
+        for(int i=0; i<skill.length(); i++) {
+            skillMap.put(skill.charAt(i), i);
         }
-        this.skillTrees = skill_trees;
     }
 }
