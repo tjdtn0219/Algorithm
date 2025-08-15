@@ -2,41 +2,39 @@ import java.util.*;
 
 class Solution {
     
-    int n;
+    int answer;
     int[] people;
     int limit;
-    int ans;
+    int n;
     
     public int solution(int[] people, int limit) {
         init(people, limit);
         solve();
-        return ans;
+        return answer;
     }
     
     public void solve() {
-        int sum = 0;
+        // 50 50 70 80
         int left = 0;
-        int right = n-1;
-        
+        int right = n - 1;
         while(left <= right) {
-            sum = people[left] + people[right];
+            int sum = people[left] + people[right];
             if(sum > limit) {
-                ans++;
                 right--;
             } else {
-                ans++;
                 left++;
                 right--;
             }
+            answer++;
         }
     }
+    // 5 5 7 8
+    // 100_000_000
     
-    //10 20 30 70 95 /// LMT = 100
-
     public void init(int[] people, int limit) {
-        this.n = people.length;
         this.people = people;
         this.limit = limit;
+        this.n = people.length;
         Arrays.sort(people);
     }
 }
