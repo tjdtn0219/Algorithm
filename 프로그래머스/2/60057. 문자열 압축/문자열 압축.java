@@ -2,62 +2,67 @@ import java.util.*;
 
 class Solution {
     
-    int n;
+    String s;
+    
+    int answer;
     
     public int solution(String s) {
-        n = s.length();
-        int ans = n;
-        for(int len=1; len<=n/2; len++) {
-            String encoded = encode(s, len);
-            ans = Math.min(ans, encoded.length());
-            // System.out.println("len : " + len + ", encoded : " + encoded);
-        }
-        
-        return ans;
+        init(s);
+        // System.out.println("dCnt : " + getDigitCnt(1));
+        solve();
+        return answer;
     }
     
-    public String encode(String s, int len) {
-        int st = 0;
-        int en = st + len - 1;
-        StringBuilder sb = new StringBuilder();
-        Stack<String> stk = new Stack<>();
-        while(st < n) {
-            String str = "";
-            if(en < n) {
-                str = s.substring(st, en+1);    
+    public void solve() {
+        int min = Integer.MAX_VALUE;
+        if(s.length() == 1) {
+            answer = 1;
+            return ;
+        }
+        for(int len=1; len<=s.length()/2; len++) {
+            min = Math.min(min, compress(len));
+        }
+        answer = min;
+    }
+    
+    public int compress(int len) {
+        String pre = "";
+        int i = 0;
+        int succeed = 1;
+        int cnt = s.length();
+        while(i < s.length() - len + 1) {
+            String tmp = s.substring(i, i+len);
+            if(pre.equals(tmp)) {
+                succeed++;
             } else {
-                str = s.substring(st);
-            }
-            if(stk.isEmpty()) {
-                stk.push(str);
-            } else {
-                if(stk.peek().equals(str)) {
-                    stk.push(str);
-                } else {
-                    if(stk.size() > 1) {
-                        sb.append(stk.size()).append(stk.pop());
-                        while(!stk.isEmpty()) {
-                            stk.pop();
-                        }
-                    } else {
-                        sb.append(stk.pop());
-                    }
-                    stk.push(str);
+                if(succeed > 1) {
+                    cnt -= len * (succeed - 1);
+                    cnt += getDigitCnt(succeed);
                 }
+                pre = tmp;
+                succeed = 1;
             }
-            st += len;
-            en += len;
+            // System.out.println("i : " + i + " | len : " + len + " | tmp : " + tmp + " | succeed : " + succeed);
+            i += len;
         }
-        
-        if(stk.size() > 1) {
-            sb.append(stk.size()).append(stk.pop());
-            while(!stk.isEmpty()) {
-                stk.pop();
-            }
-        } else {
-            sb.append(stk.pop());
+        if(succeed > 1) {
+            cnt -= len * (succeed - 1);
+            cnt += getDigitCnt(succeed);
         }
-        return sb.toString();
+        // System.out.println("cnt : " + cnt);
+        return cnt;
     }
     
+    public int getDigitCnt(int n) {
+        int cnt = 0;
+        while(n > 0) {
+            n /= 10;
+            cnt++;
+        }
+        return cnt;
+    }
+    
+    public void init(String s) {
+        this.s = s;
+    }
 }
