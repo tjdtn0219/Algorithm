@@ -3,38 +3,50 @@ import java.util.*;
 class Solution {
     
     int n;
-    int[] restDays;
+    int[] days;
+    List<Integer> ansList;
     
     public int[] solution(int[] progresses, int[] speeds) {
         init(progresses, speeds);
-        return solve();
-    }
-    
-    public int[] solve() {
-        List<Integer> ansList = new ArrayList<>();
-        for(int i=0; i<n; i++) {
-            int cnt = 1;
-            int j = i+1;
-            for(j=i+1; j<n; j++) {
-                if(restDays[i] >= restDays[j]) {
-                    cnt++;
-                } else {
-                    break;
-                }
-            }
-            i = j-1;
-            ansList.add(cnt);
-        }
+        solve();
         return ansList.stream().mapToInt(Integer::intValue).toArray();
     }
     
-    public void init(int[] progresses, int[] speeds) {
-        this.n = progresses.length;
-        restDays = new int[n];
+    public void solve() {
+        Stack<Integer> stk = new Stack<>();
+        int cnt = 0;
         for(int i=0; i<n; i++) {
-            int day = (100 - progresses[i]) / speeds[i];
-            if((100 - progresses[i]) % speeds[i] != 0) day++;
-            restDays[i] = day;
+            if(stk.isEmpty()) {
+                stk.push(days[i]);
+                cnt = 1;
+            } else {
+                if(stk.peek() >= days[i]) {
+                    cnt++;
+                } else {
+                    stk.pop();
+                    stk.push(days[i]);
+                    ansList.add(cnt);
+                    cnt = 1;
+                }
+            }
         }
+        if(!stk.isEmpty()) {
+            ansList.add(cnt);
+        }
+        
+    }
+    // 7 3 9
+    
+    public void init(int[] progresses, int[] speeds) {
+        this.n = speeds.length;
+        days = new int[n];
+        for(int i=0; i<n; i++) {
+            if((100 - progresses[i]) % speeds[i] == 0) {
+                days[i] = (100 - progresses[i]) / speeds[i];
+            } else {
+                days[i] = (100 - progresses[i]) / speeds[i] + 1;
+            }
+        }
+        this.ansList = new ArrayList<>();
     }
 }
