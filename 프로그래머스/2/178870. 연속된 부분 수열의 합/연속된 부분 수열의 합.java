@@ -3,50 +3,57 @@ import java.util.*;
 class Solution {
     
     int n;
-    int[] sequence;
+    int[] arr;
+    int[] sumArr;
     int k;
-    int[] sums;
-    int[] ans;
+    int[] answer;
     
     public int[] solution(int[] sequence, int k) {
         init(sequence, k);
         solve();
-        return ans;
+        return answer;
     }
     
     public void solve() {
-        int left = 0;
-        int right = 0;
-        int min = Integer.MAX_VALUE;
-        while(left <= right && right < n) {
+        int left = 1;
+        int right = 1;
+        int minLen = n + 1;
+        int idx = 0;
+        while(left <= right && right <= n) {
             int sum = 0;
-            if(left == 0) sum = sums[right];
-            else sum = sums[right] - sums[left-1];
-            
+            if(left == right) {
+                sum = arr[left];
+            } else {
+                sum = sumArr[right] - sumArr[left - 1];
+            }
+            // System.out.println("left : " + (left-1) + ", right : " + (right-1) + ", sum : " + sum);
             if(sum == k) {
-                if(right - left < min) {
-                    min = right - left;
-                    ans[0] = left;
-                    ans[1] = right;
+                if(right - left + 1 < minLen) {
+                    answer[0] = left - 1;
+                    answer[1] = right - 1;
+                    minLen = right - left + 1;
                 }
-                right++;
+                left++;
             } else if(sum > k) {
-                sum = left++;
+                left++;
             } else {
                 right++;
             }
         }
     }
     
-    public void init(int[] sequence, int k) {
-        this.n = sequence.length;
-        this.sequence = sequence;
+    public void init(int[] arr, int k) {
+        this.n = arr.length;
+        this.arr = new int[n + 1];
+        this.sumArr = new int[n + 1];
         this.k = k;
-        this.sums = new int[n];
-        sums[0] = sequence[0];
-        for(int i=1; i<n; i++) {
-            sums[i] = sums[i-1] + sequence[i];
+        this.answer = new int[2];
+        
+        for(int i=0; i<n; i++) {
+            this.arr[i+1] = arr[i];
         }
-        this.ans = new int[2];
+        for(int i=1; i<=n; i++) {
+            this.sumArr[i] = this.sumArr[i-1] + this.arr[i];
+        }
     }
 }
