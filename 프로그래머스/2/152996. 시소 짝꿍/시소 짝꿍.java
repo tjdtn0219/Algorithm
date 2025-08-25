@@ -2,10 +2,10 @@ import java.util.*;
 
 class Solution {
     
-    static final double[] MULTIS = {1.0, 1.5, 2.0, (4.0/3.0)};
+    static final double[] MULTIS = {1.0, 1.5, 2.0, 4.0/3.0};
     
-    int[] weights;
     long answer;
+    int[] weights;
     
     public long solution(int[] weights) {
         init(weights);
@@ -14,12 +14,11 @@ class Solution {
     }
     
     public void solve() {
+        // 10 000 000 000
         HashMap<Double, Integer> cntMap = new HashMap<>();
-        for(int weight : weights) {
-            double w = (double) weight; 
-            cntMap.put(w, cntMap.getOrDefault(w, 0) + 1);
+        for(int w : weights) {
+            cntMap.put((double) w, cntMap.getOrDefault((double) w, 0) + 1);
         }
-        
         for(double w : cntMap.keySet()) {
             for(double multi : MULTIS) {
                 if(multi == 1.0) {
@@ -36,6 +35,6 @@ class Solution {
     }
     
     public void init(int[] weights) {
-        this.weights = weights;
+        this.weights = weights;   
     }
 }
