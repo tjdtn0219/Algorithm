@@ -2,34 +2,33 @@ import java.util.*;
 
 class Solution {
     
-    int n, k;
+    int answer;
+    int n;
+    int k;
     int[] enemies;
-    int maxRound;
-    int[] dp;
-    int ans;
     
-    public int solution(int n, int k, int[] enemy) {
-        init(n, k, enemy);
+    public int solution(int n, int k, int[] enemies) {
+        init(n, k, enemies);
         solve();
-        return ans;
+        return answer;
     }
     
     public void solve() {
         PriorityQueue<Integer> pq = new PriorityQueue<>((o1, o2) -> o2 - o1);
-        for(int i=0; i<maxRound; i++) {
-            n -= enemies[i];
-            pq.add(enemies[i]);
+        for(int i=0; i<enemies.length; i++) {
+            int enemy = enemies[i];
+            n -= enemy;
+            pq.add(enemy);
             if(n < 0) {
                 if(k > 0) {
                     n += pq.poll();
                     k--;
                 } else {
-                    ans = i;
-                    return ;
+                    answer = i;
+                    break;
                 }
             }
-            ans = Math.max(ans, i+1);
-            // System.out.println("ans : " + ans);
+            answer = Math.max(answer, i+1);
         }
     }
     
@@ -37,8 +36,6 @@ class Solution {
         this.n = n;
         this.k = k;
         this.enemies = enemies;
-        this.maxRound = enemies.length;
-        this.dp = new int[maxRound];
     }
     
 }
