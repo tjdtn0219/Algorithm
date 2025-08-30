@@ -2,70 +2,66 @@ import java.util.*;
 
 class Solution {
     
-    int[] order;
+    int answer;
     Queue<Integer> q;
     Stack<Integer> stk;
-    int ans;
     int n;
+    int[] order;
     
     public int solution(int[] order) {
         init(order);
         solve();
-        return ans;
+        return answer;
     }
+    
+    // 1 2 3 4 5
+    // 4 3 1 2 5
     
     public void solve() {
-        for(int i=1; i<=n; i++) {
-            q.add(i);
-        }
-        
-        // q: 1 2 3 4 5
-        // tg: 4 3 1 2 5
-        // stk: 1 2 3 
         int idx = 0;
         while(!q.isEmpty()) {
-
-            int nxt = order[idx];
-            // System.out.println("nxt : " + nxt + ", q.peek : " + q.peek() + ", ans : " + ans);
-            // printStk();
-            if(nxt == q.peek()) {
-                // System.out.println("TAG1");
-                q.poll();
+            // System.out.println("다음 : " + q.peek() + ", idx : " + idx);
+            if(order[idx] == q.peek()) {
+                // 컨테이너에서 꺼낸 상자가 다음 순서인 경우
                 idx++;
-                ans++;
-            } else if (nxt < q.peek()) {
-                // System.out.println("TAG2");
-                boolean flag = false;
-                if(!stk.isEmpty() && nxt == stk.peek()) {
-                    stk.pop();
-                    idx++;
-                    ans++;
-                    flag = true;
-                }
-                if(!flag) return ;
+                q.poll();
             } else {
-                // System.out.println("TAG3");
-                stk.add(q.poll());
+                // 컨테이너에서 꺼낸 상자가 다음 순서가 아닌 경우
+                
+                // 보조 벨트에서 바로 꺼낼 수 있는 경우
+                while(!stk.isEmpty()) {
+                    if(stk.peek() == order[idx]) {
+                        stk.pop();
+                        idx++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                // 보조 벨트에서 더 이상 꺼낼 수 없는 경우 -> 보조 벨트에 쌓음
+                if(q.peek() != order[idx]) {
+                    stk.add(q.poll());
+                }
             }
         }
-        while(!stk.isEmpty() && stk.pop() == order[idx++]) {
-            ans++;
+        
+        while(!stk.isEmpty()) {
+            if(order[idx] == stk.pop()) {
+                idx++;
+            } else {
+                break;
+            }
         }
-    }
-    
-    private void printStk() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("stk : ");
-        for(int num : stk) {
-            sb.append(num).append(" ");
-        }
-        System.out.println(sb);
+        answer = idx;
     }
     
     public void init(int[] order) {
-        this.n = order.length;
         this.order = order;
-        q = new LinkedList<>();
-        stk = new Stack<>();
+        this.n = order.length;
+        this.q = new LinkedList<>();
+        this.stk = new Stack<>();
+        for(int i=1; i<=n; i++) {
+            q.add(i);
+        }
     }
 }
