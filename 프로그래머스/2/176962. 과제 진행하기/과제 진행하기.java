@@ -1,4 +1,5 @@
 import java.util.*;
+import java.time.LocalDateTime;
 
 class Task {
     String name;
@@ -15,7 +16,7 @@ class Solution {
     
     int n;
     PriorityQueue<Task> pq;
-    Deque<Task> stoppedQ;
+    Stack<Task> stk;
     List<String> ansList;
     
     public String[] solution(String[][] plans) {
@@ -26,65 +27,50 @@ class Solution {
     
     public void solve() {
         Task cur = pq.poll();
-        int curT = cur.start;
         
         while(!pq.isEmpty()) {
             Task nxt = pq.poll();
-            // System.out.println("cur : " + cur.name + ", nxt : " + nxt.name + ", curT : " + curT);
-            if(curT + cur.rest <= nxt.start) {
-                // System.out.println("TAG1 : " + cur.name);
-                //현재 끝나자마자 다음꺼 바로 시작
+            int finishTime = cur.start + cur.rest;
+            // System.out.println("cur : " + cur.name + ", nxt : " + nxt.name + ", finishTime : " + finishTime);
+            if(finishTime <= nxt.start) {
+                // System.out.println("다음 과제 전에 현재 종료");
+                // 다음 과제 전에 현재 종료
                 ansList.add(cur.name);
-                
-                int availT = nxt.start - (curT + cur.rest);
-                while(!stoppedQ.isEmpty()) {
+                int idle = nxt.start - finishTime;
+                // System.out.println("idle : " + idle);
+                while(!stk.isEmpty()) {
                     //현재 끝났는데 시간 여유 있을 때
-                    Task task = stoppedQ.pollLast();
-                    if(task.rest <= availT) {
+                    Task task = stk.pop();
+                    if(task.rest <= idle) {
                         ansList.add(task.name);
-                        availT -= task.rest;
+                        idle -= task.rest;
                     } else {
-                        task.rest -= availT;
-                        stoppedQ.addLast(task);
+                        task.rest -= idle;
+                        stk.add(task);
                         break;
                     }
                 }
-                cur = nxt;
-                curT = nxt.start;
             } else {
-                // System.out.println("TAG-stop : " + cur.name);
-                //중간 멈춤
-                cur.rest = curT + cur.rest - nxt.start;
-                stoppedQ.addLast(cur);
-                cur = nxt;
-                curT = nxt.start;
+                // 다음 과제 실행
+                // System.out.println("현재꺼 멈추고 다음과제 실행");
+                cur.rest = finishTime - nxt.start;
+                stk.add(cur);
             }
+            cur = nxt;
+            // break;
             if(pq.isEmpty()) {
-                // System.out.println("last : " + nxt.name);
                 ansList.add(nxt.name);
             }
-            // printAns();
         }
         
-        System.out.println(stoppedQ.size());
-        
-        while(!stoppedQ.isEmpty()) {
-            ansList.add(stoppedQ.pollLast().name);
+        while(!stk.isEmpty()) {
+            ansList.add(stk.pop().name);
         }
-    }
-    
-    private void printAns() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ans : ");
-        for(String s : ansList) {
-            sb.append(s).append(" ");
-        }
-        System.out.println(sb);
     }
     
     public void init(String[][] plans) {
         this.pq = new PriorityQueue<>((o1, o2) -> o1.start - o2.start);
-        this.stoppedQ = new LinkedList<>();
+        this.stk = new Stack<>();
         for(String[] plan : plans) {
             pq.add(new Task(plan[0], toInt(plan[1]), Integer.parseInt(plan[2])));
         }
