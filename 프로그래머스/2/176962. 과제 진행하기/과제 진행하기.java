@@ -1,5 +1,4 @@
 import java.util.*;
-import java.time.LocalDateTime;
 
 class Task {
     String name;
@@ -14,10 +13,9 @@ class Task {
 
 class Solution {
     
-    int n;
-    PriorityQueue<Task> pq;
-    Stack<Task> stk;
     List<String> ansList;
+    Queue<Task> q;
+    Stack<Task> stk;
     
     public String[] solution(String[][] plans) {
         init(plans);
@@ -26,40 +24,34 @@ class Solution {
     }
     
     public void solve() {
-        Task cur = pq.poll();
+        Task cur = q.poll();
         
-        while(!pq.isEmpty()) {
-            Task nxt = pq.poll();
+        while(!q.isEmpty()) {
+            Task nxt = q.poll();
             int finishTime = cur.start + cur.rest;
-            // System.out.println("cur : " + cur.name + ", nxt : " + nxt.name + ", finishTime : " + finishTime);
             if(finishTime <= nxt.start) {
-                // System.out.println("다음 과제 전에 현재 종료");
-                // 다음 과제 전에 현재 종료
-                ansList.add(cur.name);
+                // 현재 과제 끝났는 데 다음 과제까지 시간이 남을 때
                 int idle = nxt.start - finishTime;
-                // System.out.println("idle : " + idle);
+                ansList.add(cur.name);
                 while(!stk.isEmpty()) {
-                    //현재 끝났는데 시간 여유 있을 때
-                    Task task = stk.pop();
-                    if(task.rest <= idle) {
-                        ansList.add(task.name);
-                        idle -= task.rest;
+                    Task stopped = stk.pop();
+                    if(stopped.rest <= idle) {
+                        ansList.add(stopped.name);
+                        idle -= stopped.rest;
                     } else {
-                        task.rest -= idle;
-                        stk.add(task);
+                        stopped.rest -= idle;
+                        stk.add(stopped);
                         break;
                     }
                 }
             } else {
-                // 다음 과제 실행
-                // System.out.println("현재꺼 멈추고 다음과제 실행");
+                // 현재 과제 끝나기 전에 다음 과제 차례
                 cur.rest = finishTime - nxt.start;
                 stk.add(cur);
             }
             cur = nxt;
-            // break;
-            if(pq.isEmpty()) {
-                ansList.add(nxt.name);
+            if(q.isEmpty()) {
+                stk.add(cur);
             }
         }
         
@@ -69,18 +61,22 @@ class Solution {
     }
     
     public void init(String[][] plans) {
-        this.pq = new PriorityQueue<>((o1, o2) -> o1.start - o2.start);
+        this.q = new LinkedList<>();
         this.stk = new Stack<>();
+        this.ansList = new ArrayList<>();
+        Arrays.sort(plans, (o1, o2) -> o1[1].compareTo(o2[1]));
         for(String[] plan : plans) {
-            pq.add(new Task(plan[0], toInt(plan[1]), Integer.parseInt(plan[2])));
+            String name = plan[0];
+            int start = toInt(plan[1]);
+            int rest = Integer.parseInt(plan[2]);
+            q.add(new Task(name, start, rest));
         }
-        ansList = new ArrayList<>();
     }
     
     public int toInt(String time) {
-        String[] splits = time.split(":");
-        int h = Integer.parseInt(splits[0]);
-        int m = Integer.parseInt(splits[1]);
-        return h*60 + m;
+        String[] tmp = time.split(":");
+        int h = Integer.parseInt(tmp[0]);
+        int m = Integer.parseInt(tmp[1]);
+        return 60*h + m;
     }
 }
