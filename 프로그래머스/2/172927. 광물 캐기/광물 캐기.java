@@ -8,10 +8,10 @@ class Solution {
         {25, 5, 1}
     };
     
-    int[] picks;
-    int[] minerals;
     int answer;
+    int[] picks;
     int[] comb;
+    int[] minerals;
     int n;
     
     public int solution(int[] picks, String[] minerals) {
@@ -21,22 +21,14 @@ class Solution {
     }
     
     public void solve() {
+        // System.out.println("n : " + n);
         makeComb(0);
-    }
-    
-    private void printArr(int[] arr) {
-        StringBuilder sb = new StringBuilder();
-        for(int num : arr) {
-            sb.append(num).append(" ");
-        }
-        System.out.println(sb);
     }
     
     public void makeComb(int k) {
         if(k == n) {
             // printArr(comb);
-            int point = pickMineral();
-            answer = Math.min(answer, point);
+            answer = Math.min(answer, mine());
             return ;
         }
         
@@ -50,32 +42,38 @@ class Solution {
         }
     }
     
-    public int pickMineral() {
-        // dia = 0, iron = 1, stone = 2
-        int res = 0;
-        int[] pickArr = getPickArr();
-        // printArr(pickArr);
-        for(int i=0; i<Math.min(pickArr.length, minerals.length); i++) {
-            int pick = pickArr[i];
-            int mineral = minerals[i];
-            res += points[pick][mineral];
-        }
-        return res;
-    }
-    
-    public int[] getPickArr() {
+    public int mine() {
         int[] arr = new int[n*5];
-        int idx = 0;
-        for(int pick : comb) {
-            for(int i=0; i<5; i++) {
-                arr[idx++] = pick;
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<5; j++) {
+                arr[i*5 + j] = comb[i];
             }
         }
-        return arr;
+        int sum = 0;
+        for(int i=0; i<Math.min(n*5, minerals.length); i++) {
+            int pick = arr[i];
+            int mineral = minerals[i];
+            sum += points[pick][mineral];
+        }
+        return sum;
+    }
+    
+    private void printArr(int[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for(int c : arr) {
+            sb.append(c).append(" ");
+        }
+        System.out.println(sb);
     }
     
     public void init(int[] picks, String[] minerals) {
+        this.n = 0;
+        for(int i=0; i<picks.length; i++) {
+            n += picks[i];
+        }
         this.picks = picks;
+        this.comb = new int[n];
+        this.answer = Integer.MAX_VALUE;
         this.minerals = new int[minerals.length];
         for(int i=0; i<minerals.length; i++) {
             if(minerals[i].equals("diamond")) {
@@ -86,11 +84,5 @@ class Solution {
                 this.minerals[i] = 2;
             }
         }
-        this.n = 0;
-        for(int pick : picks) {
-            n += pick;
-        }
-        this.comb = new int[n];
-        this.answer = Integer.MAX_VALUE;
     }
 }
