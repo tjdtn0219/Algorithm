@@ -4,42 +4,50 @@ class Node {
     Node prev = null;
     Node next = null;
     boolean isDelete = false;
+    int idx = 0;
     
     public void delete() {
         this.isDelete = true;
         
-        if(this.prev != null) {
-            this.prev.next = this.next;
+        if(prev != null) {
+            prev.next = next;
         }
         
-        if(this.next != null) {
-            this.next.prev = this.prev;
+        if(next != null) {
+            next.prev = prev;
         }
     }
     
     public void restore() {
         this.isDelete = false;
         
-        if(this.prev != null) {
-            this.prev.next = this;
+        if(prev != null) {
+            prev.next = this;
         }
         
-        if(this.next != null) {
-            this.next.prev = this;
+        if(next != null) {
+            next.prev = this;
         }
     }
-    
+}
+
+class Cmd {
+    char op;
+    int num;
+    public Cmd(char op, int num) {
+        this.op = op;
+        this.num = num;
+    }
 }
 
 class Solution {
     
+    String answer;
+    List<Cmd> cmdList;
     int n;
     Node cur;
-    String[] cmds;
-    Node[] chart;
-    char[] states;
-    String answer;
     Stack<Node> stk;
+    Node[] chart;
     
     public String solution(int n, int k, String[] cmd) {
         init(n, k, cmd);
@@ -48,21 +56,37 @@ class Solution {
     }
     
     public void solve() {
-        for(String cmd : cmds) {
-            if(cmd.charAt(0) == 'U') {
-                up(Integer.parseInt(cmd.split(" ")[1]));
-            } else if(cmd.charAt(0) == 'D') {
-                down(Integer.parseInt(cmd.split(" ")[1]));
-            } else if(cmd.charAt(0) == 'C') {
-                delete();
+        for(Cmd cmd : cmdList) {
+            if(cmd.op == 'U') {
+                for(int i=0; i<cmd.num; i++) {
+                    cur = cur.prev;
+                }
+            } else if(cmd.op == 'D') {
+                for(int i=0; i<cmd.num; i++) {
+                    cur = cur.next;
+                }
+            } else if(cmd.op == 'C') {
+                if(cur.next == null) {
+                    // 마지막 행
+                    Node tmp = cur.prev;
+                    stk.add(cur);
+                    cur.delete();
+                    cur = tmp;
+                } else {
+                    Node tmp = cur.next;
+                    stk.add(cur);
+                    cur.delete();
+                    cur = tmp;
+                }
             } else {
-                rollBack();
+                Node node = stk.pop();
+                node.restore();
             }
+            // printChart();
         }
         
         StringBuilder sb = new StringBuilder();
         for(int i=0; i<n; i++) {
-            // System.out.println(chart[i].isDelete);
             if(chart[i].isDelete) {
                 sb.append('X');
             } else {
@@ -72,59 +96,52 @@ class Solution {
         answer = sb.toString();
     }
     
-    public void up(int x) {
-        for(int i=0; i<x; i++) {
-            cur = cur.prev;
+    private void printChart() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<n; i++) {
+            if(chart[i].isDelete) {
+                sb.append('X');
+            } else {
+                sb.append('O');
+            }
         }
+        sb.append(" , cur : " + cur.idx);
+        System.out.println(sb);
     }
     
-    public void down(int x) {
-        for(int i=0; i<x; i++) {
-            cur = cur.next;
-        }
-    }
-    
-    public void delete() {
-        stk.add(cur);
-        Node tmp;
-        if(cur.next != null) {
-            tmp = cur.next;
-        } else {
-            tmp = cur.prev;
+    public void init(int n, int k, String[] cmds) {
+        this.cmdList = new ArrayList<>();
+        this.stk = new Stack<>();
+        this.n = n;
+        this.chart = new Node[n];
+        
+        for(String cmd : cmds) {
+            String[] tmp = cmd.split(" ");
+            char c = tmp[0].charAt(0);
+            if(tmp.length > 1) {
+                int num = Integer.parseInt(tmp[1]);
+                cmdList.add(new Cmd(c, num));
+            } else {
+                cmdList.add(new Cmd(c, 0));
+            }
         }
         
-        cur.delete();
-        cur = tmp;
-    }
-    
-    public void rollBack() {
-        if(stk.isEmpty()) {
-            return ;
-        }
-        Node popped = stk.pop();
-        popped.restore();
-    }
-    
-    public void init(int n, int k, String[] cmd) {
-        this.n = n;
-        this.cmds = cmd;
-        this.chart = new Node[n];
-        initChart();
-        this.cur = chart[k];
-        this.states = new char[n];
-        Arrays.fill(states, 'O');
-        this.stk = new Stack<>();
-    }
-    
-    public void initChart() {
         for(int i=0; i<n; i++) {
             chart[i] = new Node();
+            chart[i].idx = i;
         }
-        chart[0].next = chart[1];
-        chart[n-1].prev = chart[n-2];
-        for(int i=1; i<n-1; i++) {
-            chart[i].prev = chart[i-1];
-            chart[i].next = chart[i+1];
+        for(int i=0; i<n; i++) {
+            if(i == 0) {
+                chart[0].next = chart[i+1];
+            } else if(i == n-1) {
+                chart[i].prev = chart[i-1];
+            } else {
+                chart[i].prev = chart[i-1];
+                chart[i].next = chart[i+1];
+            }
         }
+        this.cur = chart[k];
+
     }
+    
 }
