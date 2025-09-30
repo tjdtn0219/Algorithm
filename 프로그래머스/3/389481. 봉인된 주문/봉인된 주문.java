@@ -2,7 +2,8 @@ import java.util.*;
 
 class Solution {
     
-    static final int N = 'Z' - 'A' + 1;
+    static final int N = 'z' - 'a' + 1;
+    // static final int N = 16;
     
     long n;
     String[] bans;
@@ -15,42 +16,42 @@ class Solution {
     }
     
     public void solve() {
-        System.out.println(N);
         Arrays.sort(bans, (o1, o2) -> {
             if(o1.length() == o2.length()) {
                 return o1.compareTo(o2);
             }
             return o1.length() - o2.length();
         });
-        
-        for(int i=0; i<bans.length; i++) {
+    
+            
+        for(int i=-0; i<bans.length; i++) {
             String tg = getString(n);
-            // System.out.println("tg : " + tg);
-            if(bans[i].length() < tg.length()) {
-                n++;
-                continue;
-            } else if(bans[i].length() == tg.length()) {
-                if(bans[i].compareTo(tg) <= 0) {
+            // System.out.println("Tg : " + tg);
+            if(tg.length() == bans[i].length()) {
+                if(tg.compareTo(bans[i]) >= 0) {
                     n++;
                     continue;
                 }
+            } else if(bans[i].length() < tg.length()) {
+                n++;
+                continue;
             }
-            break;
         }
         answer = getString(n);
     }
+
     
     public String getString(long n) {
         StringBuilder sb = new StringBuilder();
-        while (n > 0) {
-            long remained = n % 26;
-            n /= 26;
-            if (remained == 0) {
+        while(n > 0) {
+            long remain = n % N;
+            if(remain == 0) {
                 n--;
                 sb.append('z');
             } else {
-                sb.append((char)('a' + remained - 1));
+                sb.append((char) ('a' + remain - 1));
             }
+            n /= N;
         }
         return sb.reverse().toString();
     }
