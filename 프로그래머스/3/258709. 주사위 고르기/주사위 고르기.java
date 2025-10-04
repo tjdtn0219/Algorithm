@@ -13,19 +13,32 @@ class Solution {
 
     public void calSumA(int ind, int sum) {
         if (ind == N/2) {
-            //sum을 가지고 BS
-            int lo = 0;
-            int hi = sumList.size();
-            while (lo + 1 < hi) {
-                int mid = (lo + hi) / 2;
-                if (sumList.get(mid) < sum) lo = mid;
-                else hi = mid;
-            }
-            tmpSum += (lo + 1);
+            // //sum을 가지고 BS
+            // int lo = 0;
+            // int hi = sumList.size();
+            // while (lo + 1 < hi) {
+            //     int mid = (lo + hi) / 2;
+            //     if (sumList.get(mid) < sum) lo = mid;
+            //     else hi = mid;
+            // }
+            // tmpSum += (lo + 1);
+            tmpSum += getUpperIdx(sum);
             return;
         }
         for (int i = 0; i < 6; i++)
             calSumA(ind+1, sum + D[A[ind]][i]);
+    }
+    
+    public int getUpperIdx(int target) {
+        int left = 0;
+        int right = sumList.size();
+        
+        while(left < right) {
+            int mid = (left + right) / 2;
+            if(target <= sumList.get(mid)) right = mid;
+            else left = mid + 1;
+        }
+        return left;
     }
 
     public void calSumB(int ind, int sum) {
