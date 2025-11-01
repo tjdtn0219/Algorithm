@@ -1,125 +1,118 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
-	
-	int n, m;
-	int[] arr;
-	int[][] queries;
-	int[] minTree;
-	int[] maxTree;
-	int min, max;
 
-	public static void main(String[] args) throws Exception {
-		new Main().solution();
-	}
+    static class Node {
+        int a, b;
+        public Node(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+    }
 
-	public void solution() {
-		input();
-		solve();
-	}
+    static int n, m;
+    static int[] arr;
+    static List<Node> nodeList;
+    static int[] minTree;
+    static int[] maxTree;
+    static int min, max;
 
-	public void solve() {
-		int size = getTreeSize();
-		minTree = new int[size];
-		maxTree = new int[size];
-		initMinTree(1, n, 1);
-		initMaxTree(1, n, 1);
+    public static void main(String[] args) throws Exception {
+        input();
+        solve();
+    }
 
-		StringBuilder sb = new StringBuilder();
-		for(int[] query : queries) {
-			min = Integer.MAX_VALUE;
-			max = Integer.MIN_VALUE;
-			int a = query[0];
-			int b = query[1];
-			findMin(1, n, 1, a, b);
-			findMax(1, n, 1, a, b);
-			sb.append(min + " " + max + "\n");
-		}
-		System.out.print(sb);
-	}
-
-	public void findMin(int left, int right, int node, int a, int b) {
-		if(a > right || b < left) return ;
-		if(a <= left && right <= b) {
-			min = Math.min(min, minTree[node]);
-			return ;
-		}
-
-		int mid = (left + right) / 2;
-		findMin(left, mid, node*2, a, b);
-		findMin(mid+1, right, node*2+1, a, b);
-	}
-
-	public void findMax(int left, int right, int node, int a, int b) {
-		if(a > right || b < left) return ;
-		if(a <= left && right <= b) {
-			max = Math.max(max, maxTree[node]);
-			return ;
-		}
-
-		int mid = (left + right) / 2;
-		findMax(left, mid, node*2, a, b);
-		findMax(mid+1, right, node*2+1, a, b);
-	}
+    public static void solve() {
+        initTree();
+        StringBuilder sb = new StringBuilder();
+        for(Node node : nodeList) {
+            int a = node.a;
+            int b = node.b;
+            min = Integer.MAX_VALUE;
+            max = -1;
+            findMin(1, n, 1, a, b);
+            findMax(1, n, 1, a, b);
+            sb.append(min).append(" ").append(max).append("\n");
+        }
+        System.out.println(sb);
+    }
 
 
-	public void initMinTree(int left, int right, int node) {
-		if(left == right) {
-			minTree[node] = arr[left];
-		} else {
-			int mid = (left + right) / 2;
-			initMinTree(left, mid, node*2);
-			initMinTree(mid+1, right, node*2 + 1);
-			if(minTree[node*2] < minTree[node*2+1]) {
-				minTree[node] = minTree[node*2];
-			}else {
-				minTree[node] = minTree[node*2+1];
-			}
-		}
+    public static void findMin(int st, int en, int node, int left, int right) {
+        if(left > en || right < st) return ;
+        if(left <= st && en <= right) {
+            min = Math.min(min, minTree[node]);
+            return ;
+        }
+        int mid = (st + en) / 2;
+        findMin(st, mid, node*2, left, right);
+        findMin(mid+1, en, node*2 + 1, left, right);
+    }
 
-	}
+    public static void findMax(int st, int en, int node, int left, int right) {
+        if(left > en || right < st) return ;
+        if(left <= st && en <= right) {
+            max = Math.max(max, maxTree[node]);
+            return ;
+        }
+        int mid = (st + en) / 2;
+        findMax(st, mid, node*2, left, right);
+        findMax(mid+1, en, node*2 + 1, left, right);
+    }
 
-	public void initMaxTree(int left, int right, int node) {
-		if(left == right) {
-			maxTree[node] = arr[left];
-		} else {
-			int mid = (left + right) / 2;
-			initMaxTree(left, mid, node*2);
-			initMaxTree(mid+1, right, node*2 + 1);
-			if(maxTree[node*2] > maxTree[node*2+1]) {
-				maxTree[node] = maxTree[node*2];
-			}else {
-				maxTree[node] = maxTree[node*2+1];
-			}
-		}
+    public static void initMinTree(int st, int en, int node) {
+        if(st == en) minTree[node] = arr[st];
+        else {
+            int mid = (st + en) / 2;
+            initMinTree(st, mid, node * 2);
+            initMinTree(mid+1, en, node * 2 + 1);
+            minTree[node] = Math.min(minTree[node*2], minTree[node*2 + 1]);
+        }
+    }
 
-	}
+    public static void initMaxTree(int st, int en, int node) {
+        if(st == en) maxTree[node] = arr[st];
+        else {
+            int mid = (st + en) / 2;
+            initMaxTree(st, mid, node * 2);
+            initMaxTree(mid+1, en, node * 2 + 1);
+            maxTree[node] = Math.max(maxTree[node*2], maxTree[node*2 + 1]);
+        }
+    }
 
-	public int getTreeSize() {
-		int h = (int) Math.ceil(Math.log(n) / Math.log(2)) + 1;
-		return (int) Math.pow(2, h);
-	}
+    public static void initTree() {
+        int h = (int) Math.ceil(Math.log(n) / Math.log(2)) + 1;
+        int size = (int) Math.pow(2, h) - 1;
+        minTree = new int[size + 1];
+        maxTree = new int[size + 1];
+        initMinTree(1, n, 1);
+        initMaxTree(1, n, 1);
+    }
 
-	public void input() {
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			String[] n_m = br.readLine().split(" ");
-			n = Integer.parseInt(n_m[0]);
-			m = Integer.parseInt(n_m[1]);
-			arr = new int[n+1];
-			queries = new int[m][2];
-			for(int i=1; i<=n; i++) {
-				arr[i] = Integer.parseInt(br.readLine());
-			}
-			for(int i=0; i<m; i++) {
-				String[] a_b = br.readLine().split(" ");
-				queries[i][0] = Integer.parseInt(a_b[0]);
-				queries[i][1] = Integer.parseInt(a_b[1]);
-			}
-		} catch (Exception e) {
-			System.out.println("INPUT ERROR!");
-			throw new RuntimeException(e);
-		}
-	}
+    public static void input() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] n_m = br.readLine().split(" ");
+            n = Integer.parseInt(n_m[0]);
+            m = Integer.parseInt(n_m[1]);
+            arr = new int[n+1];
+            for(int i=0; i<n; i++) {
+                arr[i+1] = Integer.parseInt(br.readLine());
+            }
+            nodeList = new ArrayList<>();
+            for(int i=0; i<m; i++) {
+                String[] a_b_c = br.readLine().split(" ");
+                int a = Integer.parseInt(a_b_c[0]);
+                int b = Integer.parseInt(a_b_c[1]);
+                nodeList.add(new Node(a, b));
+            }
+
+        } catch (Exception e) {
+            System.out.println("INPUT ERROR!!!!!!");
+            throw new RuntimeException(e);
+        }
+    }
+
 }
